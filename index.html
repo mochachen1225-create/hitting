@@ -74,6 +74,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .iconbtn{pointer-events:auto;width:44px;height:44px;flex:none;border-radius:50%;border:1px solid rgba(246,241,228,.25);background:rgba(16,14,24,.6);font-size:22px;display:grid;place-items:center;backdrop-filter:blur(6px)}
 .hud-mid{flex:1;min-width:0}
 #hudTitle{font-family:var(--font-display);font-weight:900;font-size:18px;letter-spacing:.08em}
+#backBtn.exit{width:auto;padding:0 14px;border-radius:99px;font-size:14px;font-weight:700}
 #hudTime{font-size:13px;color:var(--mist);font-variant-numeric:tabular-nums;margin-left:6px}
 #hudTime.low{color:#ff7a66}
 .hp{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mist);margin-top:4px}
@@ -171,7 +172,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 
 <div id="hud" hidden>
   <div class="hud-top">
-    <button id="backBtn" class="iconbtn" type="button" aria-label="返回">‹</button>
+    <button id="backBtn" class="iconbtn exit" type="button" data-i18n="exit"></button>
     <div class="hud-mid">
       <div><span id="hudTitle"></span> <span id="hudTime"></span></div>
       <div class="hp"><span data-i18n="hp"></span><div class="bar"><i id="hpFill"></i></div></div>
@@ -199,10 +200,10 @@ const SEALS=['小人絕緣','百無禁忌','貴人到位','霉運清零','好運
 const MODE_IDS=['darts','slipper','burn','nail','tear','crumple','water','shake'];
 const GLYPH={darts:'鏢',slipper:'鞋',burn:'燒',nail:'釘',tear:'撕',crumple:'揉',water:'泡',shake:'搖'};
 // 打小人口訣：字幕一律繁體中文
-const CHANT=['打你個小人頭，打到你開會只會點頭','打你個小人手，打到你搶功勞就手抖','打你個小人腳，打到你插隊就踩到樂高','打你個小人嘴，打到你講壞話就咬到舌頭','打你個小人眼，打到你偷看別人手機就沒電','打你個小人耳，打到你聽八卦只聽到廣告','打你個小人鼻，打到你一說謊就打噴嚏','打你個小人肚，打到你吃獨食就一直打嗝','打你個小人屁股，打到你一坐下就放屁','打你個小人頭髮，打到你天天睡醒都翹毛','打你個小人背，打到你以後專門倒楣','打你個小人心，打到你從此只想當好人'];
+const CHANT=['打你個小人頭，打到你開會只會點頭','打你個小人手，打到你搶功勞就手抖','打你個小人腳，打到你插隊就踩到樂高','打你個小人嘴，打到你講壞話就咬到舌頭','打你個小人眼，打到你偷看別人手機就沒電','打你個小人耳，打到你聽八卦只聽到廣告','打你個小人鼻，打到你一說謊就打噴嚏','打你個小人肚，打到你偷吃零食就一直打嗝','打你個小人屁股，打到你一坐下就放屁','打你個小人頭髮，打到你天天睡醒都翹毛','打你個小人背，打到你以後專門倒楣','打你個小人心，打到你從此只想當好人'];
 const T={
  zh:{
-  nameTitle:'今天要退散誰？',namePh:'臭小人',nameNote:'不填就叫「臭小人」。名字只留在你的手機上，不會上傳。',next:'就是他了',
+  nameTitle:'今天要退散誰？',exit:'‹ 離開',namePh:'臭小人',nameNote:'不填就叫「臭小人」。名字只留在你的手機上，不會上傳。',next:'就是他了',
   target:'對象',edit:'換人',modesTitle:'選一種退散法',random:'隨機抽一個',hp:'怨氣',
   soundOn:'音效 開',soundOff:'音效 關',defaultName:'臭小人',
   resTitle:'小人退散　萬歲！',resLine:(n,v)=>`「${n}」已經被${v}了`,fortune:'今日運勢',
@@ -215,14 +216,14 @@ const T={
   combo:'連擊',headshot:'爆頭！',sec:'秒',
   clearTitle:'神清氣爽～',clearSubs:['肩膀突然變輕了','空氣都變甜了','今天可以多吃一碗飯','嘴角自己往上揚','霉運已打包帶走'],tapOn:'點一下繼續',
   modes:{darts:['射飛鏢','往上滑，瞄準射出去'],slipper:['拖鞋打','30 秒挑戰 100 下'],burn:['燒掉','拿蠟燭追著燒'],nail:['釘草人','釘在神木上'],tear:['撕碎','手指劃過就撕開'],crumple:['揉爛丟掉','揉成一團丟垃圾桶'],water:['泡水','拖進水裡泡到爛'],shake:['搖到暈','關進罐子用力搖']},
-  hints:{darts:'手指從下往上滑，射出飛鏢。小人會跑，要瞄準！',slipper:'30 秒計時！點小人就打下去。打滿 100 下拿金拖鞋獎',burn:'手指按住拖著蠟燭走，追上小人燒它',nail:'點小人敲釘子。一指按住它不准動，另一指敲更準',tear:'手指快速劃過小人就撕開，也可以兩指往外拉',crumple:'手指在小人身上來回搓，揉成紙團後往上甩進垃圾桶',water:'按住小人拖進水裡，壓著不讓它浮上來',shake:'搖手機，或按住罐子用力甩'},
+  hints:{darts:'手指從下往上滑，射出飛鏢。小人會跑，要瞄準！',slipper:'30 秒計時！小人會亂跑，追著點它打。打滿 100 下拿金拖鞋獎',burn:'手指按住拖著蠟燭走，追上小人燒它',nail:'點小人敲釘子。一指按住它不准動，另一指敲更準',tear:'手指快速劃過小人就撕開，也可以兩指往外拉',crumple:'手指在小人身上來回搓，揉成紙團後往上甩進垃圾桶',water:'按住小人拖進水裡，壓著不讓它浮上來',shake:'搖手機，或按住罐子用力甩'},
   verbs:{darts:'射成刺蝟',slipper:'打成扁扁',burn:'燒成灰',nail:'釘在神木上',tear:'撕成碎片',crumple:'揉爛丟進垃圾桶',water:'泡到爛掉',shake:'搖到暈倒'},
   react:{hit:['哎喲！','我錯了～','又是我？','別打臉！','下次不敢了','痛痛痛','饒命啊','嗚嗚嗚'],dart:['啊！中了','好痛！','我變刺蝟了'],headshot:['正中腦門！','眼冒金星～'],miss:['沒中～','射不到！','哈哈歪了'],burn:['好燙！','救火啊！','屁股著火了！','我只是紙啊！'],nail:['放開我！','我不敢了！','釘好緊！'],tear:['我的腿！','碎了碎了','別撕了～'],crumple:['好皺！','別揉了～','我變醜了'],ball:['我變成球了…'],miss2:['丟不進～','再練練吧','差一點點'],water:['咕嚕咕嚕','我不會游泳！','好冰！','救命～'],shake:['好暈～','停！停！','我要吐了','天旋地轉']},
   fortunes:[['大吉','小人退散，貴人排隊'],['大吉','今天做什麼都順，連綠燈都等你'],['中吉','壞話傳不到你耳朵裡'],['中吉','今天的飲料第二杯半價'],['小吉','小人還在，但他今天一直塞車'],['吉','心情變好，看什麼都順眼'],['上上籤','回家摸摸貓，好運加倍']],
   blessed:['上上籤','貓貓加持，諸事大吉']
  },
  en:{
-  nameTitle:'Who are we banishing today?',namePh:'Stinky Jerk',nameNote:'Leave it blank for "Stinky Jerk". The name stays on your phone.',next:"That's the one",
+  nameTitle:'Who are we banishing today?',exit:'‹ Exit',namePh:'Stinky Jerk',nameNote:'Leave it blank for "Stinky Jerk". The name stays on your phone.',next:"That's the one",
   target:'Target',edit:'Change',modesTitle:'Pick a way to banish',random:'Random pick',hp:'Grudge',
   soundOn:'Sound on',soundOff:'Sound off',defaultName:'Stinky Jerk',
   resTitle:'Begone, petty people!',resLine:(n,v)=>`"${n}" has been ${v}.`,fortune:"Today's fortune",
@@ -235,7 +236,7 @@ const T={
   combo:'Combo',headshot:'Headshot!',sec:'s',
   clearTitle:'Ahh, refreshing!',clearSubs:['Shoulders feel lighter','Even the air tastes sweeter','Bad luck: packed and gone','Smile unlocked','Room for a second dessert'],tapOn:'Tap to continue',
   modes:{darts:['Darts','Swipe up and aim'],slipper:['Slipper','100 hits in 30 seconds'],burn:['Burn','Chase it with a candle'],nail:['Nail','Pin it to the sacred tree'],tear:['Tear','Swipe across to rip'],crumple:['Crumple & toss','Ball it up, bin it'],water:['Soak','Drown it to mush'],shake:['Shake','Shake it in a jar']},
-  hints:{darts:'Swipe up from the bottom to throw. It moves, so aim!',slipper:'30-second round! Tap it to slap. 100 hits wins the Golden Slipper',burn:'Hold and drag the candle. Chase the paper man and burn it',nail:'Tap it to drive a nail. Hold it still with one finger and hammer with another',tear:'Swipe fast across it to rip, or spread two fingers apart',crumple:'Rub back and forth on it to crumple, then flick the ball into the bin',water:'Grab it, drag it underwater and hold it down',shake:'Shake your phone, or grab the jar and fling it around'},
+  hints:{darts:'Swipe up from the bottom to throw. It moves, so aim!',slipper:'30-second round! It runs around, so chase and tap it. 100 hits wins the Golden Slipper',burn:'Hold and drag the candle. Chase the paper man and burn it',nail:'Tap it to drive a nail. Hold it still with one finger and hammer with another',tear:'Swipe fast across it to rip, or spread two fingers apart',crumple:'Rub back and forth on it to crumple, then flick the ball into the bin',water:'Grab it, drag it underwater and hold it down',shake:'Shake your phone, or grab the jar and fling it around'},
   verbs:{darts:'turned into a pincushion',slipper:'slippered flat',burn:'burned to ash',nail:'nailed to the sacred tree',tear:'torn to shreds',crumple:'crumpled and binned',water:'soaked to mush',shake:'shaken silly'},
   react:{hit:['Ouch!','Sorry!','Me again?','Not the face!','Never again','Ow ow ow','Mercy!','Waaah'],dart:['Got me!','Ouch!',"I'm a pincushion"],headshot:['Right in the head!','Seeing stars'],miss:['Missed!','Too slow!','Ha, nope'],burn:['Hot hot hot!','Fire!','My butt is on fire!',"I'm only paper!"],nail:['Let me go!','I give up!','So tight!'],tear:['My leg!','Shredded!','Stop ripping!'],crumple:['So wrinkly!','Stop it!',"I'm ugly now"],ball:["I'm a ball now..."],miss2:['Missed the bin!','Practice more','So close'],water:['Glub glub',"I can't swim!",'So cold!','Help!'],shake:['So dizzy','Stop! Stop!',"I'm gonna hurl",'Spinning...']},
   fortunes:[['大吉','Petty people gone, good people queue up'],['大吉','Even the traffic lights wait for you'],['中吉','Gossip never reaches your ears'],['中吉','Second drink half price today'],['小吉',"They're still around, but stuck in traffic"],['吉','Good mood, everything looks right'],['上上籤','Go pet a cat for double luck']],
@@ -337,19 +338,19 @@ function drawName(c,m){const name=m.name;if(!name)return;c.save();c.fillStyle='#
   else{c.translate(0,2);c.rotate(Math.PI/2);let fs=22;c.font=`900 ${fs}px ${FONT_D}`;const w=c.measureText(name).width;
     if(w>78){fs=Math.max(8,fs*78/w);c.font=`900 ${fs}px ${FONT_D}`;}c.textAlign='center';c.textBaseline='middle';c.fillText(name,0,0);}
   c.restore();}
-function drawFace(c,m){const f=m.face;c.save();c.translate(0,-66);c.strokeStyle='#2b2630';c.fillStyle='#2b2630';c.lineWidth=2.4;c.lineCap='round';
+function drawFace(c,m){const f=m.face;c.save();c.translate(0,-67);c.scale(1.3,1.3);c.strokeStyle='#2b2630';c.fillStyle='#2b2630';c.lineWidth=2.4;c.lineCap='round';
   if(m.char>0)c.globalAlpha*=1-m.char;
   const eye=x=>{c.beginPath();switch(f){
     case 'hit':c.moveTo(x-4,-6);c.lineTo(x+4,2);c.moveTo(x+4,-6);c.lineTo(x-4,2);c.stroke();break;
     case 'scared':c.arc(x,-2,4.5,0,7);c.stroke();c.beginPath();c.arc(x,-2,1.6,0,7);c.fill();break;
     case 'dizzy':for(let a=0;a<12;a+=.4){const r=a*.45;c.lineTo(x+Math.cos(a)*r,-2+Math.sin(a)*r);}c.stroke();break;
     case 'cry':c.moveTo(x-4,-3);c.lineTo(x+4,-3);c.stroke();c.fillStyle='#6fb3ff';c.beginPath();c.ellipse(x,4,2,4,0,0,7);c.fill();c.fillStyle='#2b2630';break;
-    default:c.arc(x,-1,4,Math.PI*1.1,Math.PI*1.9);c.stroke();}};
+    default:c.ellipse(x,-2,2.8,3.8,0,0,7);c.fill();}};
   eye(-9);eye(9);c.beginPath();
   if(f==='hit'||f==='scared'){c.ellipse(0,11,4,5,0,0,7);c.fill();}
   else if(f==='dizzy'){c.moveTo(-6,10);c.quadraticCurveTo(0,14,6,10);c.stroke();c.fillStyle='#e46a7a';c.beginPath();c.ellipse(3,13,3,4,0,0,7);c.fill();}
   else if(f==='cry'){c.arc(0,15,5,Math.PI*1.15,Math.PI*1.85);c.stroke();}
-  else{c.moveTo(-6,8);c.quadraticCurveTo(2,14,8,6);c.stroke();}
+  else{c.lineWidth=2;c.moveTo(-8,9);for(let i=1;i<=16;i++){const xx=-8+i;c.lineTo(xx,9+Math.sin(i/16*Math.PI*3)*1.8);}c.stroke();}
   c.fillStyle='rgba(235,120,130,.35)';c.beginPath();c.ellipse(-15,6,4,2.5,0,0,7);c.moveTo(19,6);c.ellipse(15,6,4,2.5,0,0,7);c.fill();
   c.restore();}
 function drawManLocal(c,m,shadow=true){
@@ -461,12 +462,16 @@ function drawSlipper(c,x,y,rot,k,al){c.save();c.globalAlpha=al;c.translate(x,y);
 function renderChant(g){const line=CHANT[g.chantI%CHANT.length],n=Math.min(g.chantC,line.length);$('#chant .done').textContent=line.slice(0,n);$('#chant .rest').textContent=line.slice(n);}
 const SLIP_GOAL=100,SLIP_TIME=30;
 function medalFor(n){return n>=SLIP_GOAL?'gold':n>=70?'silver':n>=40?'bronze':null;}
-function makeSlipper(){const g=baseGame(),m=g.m;g.slaps=[];g.combo=0;g.lastHit=0;g.chantI=0;g.chantC=0;g.comboPop=0;g.hits=0;g.left=SLIP_TIME;g.started=false;
+function makeSlipper(){const g=baseGame(),m=g.m;m.vx=rand(-1,1)>0?120:-120;m.vy=rand(-60,60);g.slaps=[];g.combo=0;g.lastHit=0;g.chantI=0;g.chantC=0;g.comboPop=0;g.hits=0;g.left=SLIP_TIME;g.started=false;
   $('#chant').hidden=false;renderChant(g);
   const finish=()=>{S.slipHits=g.hits;S.medal=medalFor(g.hits);g.m.hp=0;setHp(0);g.done=true;g.endT=0;sfx('ding');buzz([30,40,60]);};
   g.update=dt=>{tickFace(m,dt);
     if(g.started&&!g.done){g.left-=dt;if(g.left<=0){g.left=0;finish();}}
-    if(!g.done){m.x=W/2+Math.sin(g.t*1.3)*W*.08;m.rot=Math.sin(g.t*2.1)*.06;m.sx+=(1-m.sx)*Math.min(1,dt*12);m.sy+=(1-m.sy)*Math.min(1,dt*12);}
+    if(!g.done){// runs around; faster the more it gets hit
+      const maxV=110+g.hits*1.1;m.vx+=(Math.random()-.5)*600*dt;m.vy+=(Math.random()-.5)*600*dt;const v=Math.hypot(m.vx,m.vy)||1;if(v>maxV||v<maxV*.6){const k=clamp(v,maxV*.6,maxV)/v;m.vx*=k;m.vy*=k;}
+      m.x+=m.vx*dt;m.y+=m.vy*dt;const mx=70*m.s,top=150+100*m.s,bot=H-140-105*m.s;
+      if(m.x<mx){m.x=mx;m.vx=Math.abs(m.vx);}if(m.x>W-mx){m.x=W-mx;m.vx=-Math.abs(m.vx);}if(m.y<top){m.y=top;m.vy=Math.abs(m.vy);}if(m.y>bot){m.y=bot;m.vy=-Math.abs(m.vy);}
+      m.rot=m.vx/maxV*.15+Math.sin(g.t*14)*.05;m.sx+=(1-m.sx)*Math.min(1,dt*12);m.sy+=(1-m.sy)*Math.min(1,dt*12);}
     else{m.sy=Math.max(.06,m.sy-dt*3);m.sx=Math.min(1.5,m.sx+dt*1.5);m.face='dizzy';if(g.endT>.8&&m.alpha>0){if(m.alpha===1){paperBurst(m.x,m.y+60*m.s,40,420);sfx('pop');}m.alpha=Math.max(0,m.alpha-dt*4);}}
     for(const s of g.slaps)s.t+=dt;g.slaps=g.slaps.filter(s=>s.t<.35);
     if(performance.now()-g.lastHit>900)g.combo=0;g.comboPop=Math.max(0,g.comboPop-dt*4);endCheck(g,dt);};
@@ -474,11 +479,11 @@ function makeSlipper(){const g=baseGame(),m=g.m;g.slaps=[];g.combo=0;g.lastHit=0
     c.fillStyle='rgba(0,0,0,.25)';c.beginPath();c.ellipse(m.x,m.y+105*m.s,70*m.s*m.sx,10*m.s,0,0,7);c.fill();
     drawMan(c,m);
     for(const s of g.slaps){const k=Math.min(1,s.t/.08);drawSlipper(c,s.x+30,s.y-60*(1-k),-1.2+.95*k,m.s*.8,s.t>.2?(.35-s.t)/.15:1);}
-    c.save();c.textAlign='center';c.fillStyle=g.left<6&&g.started?'#ff7a66':'#f6f1e4';c.font=`900 30px ${FONT_D}`;c.fillText(`${g.left.toFixed(1)} ${t('sec')}`,W*.27,Math.max(120,m.y-150*m.s));
-    c.fillStyle=g.hits>=70?'#e9b949':'#f6f1e4';c.fillText(`${g.hits} / ${SLIP_GOAL}`,W*.73,Math.max(120,m.y-150*m.s));c.restore();
-    if(g.combo>=3){c.save();c.fillStyle='#e9b949';c.font=`900 ${24+g.comboPop*12}px ${FONT_D}`;c.textAlign='center';c.fillText(`${t('combo')} ×${g.combo}`,W/2,Math.max(160,m.y-112*m.s));c.restore();}};
-  g.down=p=>{if(g.done)return;g.slaps.push({x:p.x,y:p.y,t:0});const hit=hitMan(m,p.x,p.y,18);
-    if(!hit){sfx('whoosh');return;}
+    c.save();c.textAlign='center';c.fillStyle=g.left<6&&g.started?'#ff7a66':'#f6f1e4';c.font=`900 30px ${FONT_D}`;c.fillText(`${g.left.toFixed(1)} ${t('sec')}`,W*.27,122);
+    c.fillStyle=g.hits>=70?'#e9b949':'#f6f1e4';c.fillText(`${g.hits} / ${SLIP_GOAL}`,W*.73,122);c.restore();
+    if(g.combo>=3){c.save();c.fillStyle='#e9b949';c.font=`900 ${24+g.comboPop*12}px ${FONT_D}`;c.textAlign='center';c.fillText(`${t('combo')} ×${g.combo}`,W/2,162);c.restore();}};
+  g.down=p=>{if(g.done)return;g.slaps.push({x:p.x,y:p.y,t:0});const hit=hitMan(m,p.x,p.y,24);
+    if(!hit){sfx('whoosh');return;}m.vx+=(m.x-p.x)*2;m.vy+=(m.y-p.y)*2;
     sfx('slap');buzz(12);if(m.bruises.length<40)m.bruises.push([hit[0],hit[1],10+Math.random()*8]);m.sy=.84;m.sx=1.1;setFace(m,'hit',.35);shake(3,.08);
     g.combo++;g.lastHit=performance.now();g.comboPop=1;sparks(p.x,p.y,5,'#ffffff');say('hit',m.x,headY(m));
     g.chantC+=2;const line=CHANT[g.chantI%CHANT.length];if(g.chantC>line.length+3){g.chantI++;g.chantC=0;}renderChant(g);

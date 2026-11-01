@@ -16,7 +16,8 @@ const save = (file, dataUrl) => fs.writeFileSync(file, Buffer.from(dataUrl.split
 
   // home-screen icon: the paper man's worried, cocky face on cinnabar, with a slipper coming in
   for (const size of [180, 192, 512]) {
-    save(`icon-${size}.png`, await p.evaluate(size => {
+    save(`icon-${size}.png`, await p.evaluate(async size => {
+      await Promise.all([ART_WAIT.manTex, ART_WAIT.slipperImg]);
       const c = document.createElement('canvas'); c.width = c.height = size; const x = c.getContext('2d');
       const bg = x.createLinearGradient(0, 0, size, size); bg.addColorStop(0, '#e2513c'); bg.addColorStop(1, '#a8241a');
       x.fillStyle = bg; x.fillRect(0, 0, size, size);
@@ -30,7 +31,7 @@ const save = (file, dataUrl) => fs.writeFileSync(file, Buffer.from(dataUrl.split
 
   // 1200x630 share preview
   save('og.png', await p.evaluate(async () => {
-    const img = await ART_WAIT.fu1, bgArt = await ART_WAIT.menu;
+    const img = await ART_WAIT.fu1, bgArt = await ART_WAIT.menu; await Promise.all([ART_WAIT.manTex, ART_WAIT.slipperImg]);
     await document.fonts.load(`900 120px ${FONT_D}`, '小人退散打手機小遊戲種法');
     const c = document.createElement('canvas'); c.width = 1200; c.height = 630; const x = c.getContext('2d');
     const bg = x.createLinearGradient(0, 0, 0, 630); bg.addColorStop(0, '#1c1828'); bg.addColorStop(1, '#0b0a12'); x.fillStyle = bg; x.fillRect(0, 0, 1200, 630);

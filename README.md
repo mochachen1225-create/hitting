@@ -110,10 +110,12 @@
 ## 素材來源
 
 **圖像**
-- **AI 生成**：12 張場景背景、符咒紙、兩張裝飾版符咒（分享圖用）、貓貓神角色，由開發者使用 Google Gemini 與 Google Flow 生成，再壓縮成 WebP、去背（`tools/prep-art.py`）。上架 itch.io 時會勾選 AI Generated Graphics。
-- **程式繪製**：紙小人、拖鞋、飛鏢、蠟燭、筊杯、垃圾桶、罐子、小魚乾等會動的東西，都是 Canvas 即時畫的。每個場景也保留一套程式畫的備用版本，AI 圖沒載入時照樣能玩。
+- **AI 生成**：12 張場景背景、符咒紙、兩張裝飾版符咒（分享圖用）、貓貓神、紙小人的紙紋理與輪廓、藍白拖，由開發者使用 Google Gemini 與 Google Flow 生成，再壓縮成 WebP、去背、描輪廓（`tools/prep-art.py`）。上架 itch.io 時會勾選 AI Generated Graphics。
+- **程式繪製**：紙小人的表情和變形（撕碎、揉皺、燒焦、泡爛）、飛鏢、蠟燭、筊杯、垃圾桶、罐子、小魚乾等，都是 Canvas 即時畫的。每個場景也保留一套程式畫的備用版本，AI 圖沒載入時照樣能玩。
 
 **音效**：全部用 Web Audio API 即時合成（拍打、火焰、敲釘、撕紙、水花、貓叫、呼嚕等），沒有錄音檔，也沒有人聲。
+
+**背景音樂（AI 生成）**：〈Ascent of the Jade Throne〉（選單、結算）和〈Steps of the Jade Fox〉（遊戲中），由開發者用 Google 的 AI 音樂工具生成，可在右上角 ♫ 單獨關閉。上架 itch.io 時會勾選 AI Generated Sound。
 
 **字型**（皆由 Google Fonts 提供，SIL Open Font License 1.1）：
 

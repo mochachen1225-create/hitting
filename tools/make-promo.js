@@ -45,7 +45,7 @@ async function playUntilResult(p) {
   const p = await b.newPage({ viewport: { width: 390, height: 760 } });
   await p.goto(srv.url); await p.waitForTimeout(500);
   const url = await p.evaluate(async () => {
-    const img = await ART_WAIT.fu1, bg = await ART_WAIT.menu;
+    const img = await ART_WAIT.fu1, bg = await ART_WAIT.menu; await Promise.all([ART_WAIT.manTex, ART_WAIT.slipperImg]);
     await document.fonts.load(`900 80px ${FONT_D}`, '小人退散');
     const c = document.createElement('canvas'); c.width = 630; c.height = 500; const x = c.getContext('2d');
     x.fillStyle = '#100e18'; x.fillRect(0, 0, 630, 500);

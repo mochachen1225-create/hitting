@@ -11,11 +11,11 @@
 | Embed options | Viewport 414 × 896、勾 Mobile friendly、Orientation: Portrait、勾 Fullscreen button |
 | Classification | Games · Genre: Action / Other |
 | Pricing | Free（或 No payments） |
-| Generative AI disclosure | **Yes**，勾三項：AI Generated Graphics（背景、符咒、貓貓神由 Google Gemini／Flow 生成）、AI Generated Code（程式由 Claude Code 撰寫）、AI Generated Text & Dialog（介面文字、台詞、圖鑑由 Claude 撰寫，經人工挑選修改）。音效是程式即時合成，沒有用 AI 生成音訊 |
+| Generative AI disclosure | **Yes**，勾三項：AI Generated Graphics（背景、符咒、貓貓神由 Google Gemini／Flow 生成）、AI Generated Code（程式由 Claude Code 撰寫）、AI Generated Text & Dialog（介面文字、台詞、圖鑑由 Claude 撰寫，經人工挑選修改）。另外勾 AI Generated Sound（兩首背景音樂由 Google 的 AI 音樂工具生成；音效是程式即時合成） |
 | Cover image | `promo/cover-itch.png`（630 × 500） |
 | Screenshots | `promo/en/*.jpg`（英文介面，780 × 1688） |
 
-Newgrounds 用 `dist/xiaoren-tuisan-newgrounds-v<版本>.zip`：沒有 AI 圖，所有場景用程式繪製版本。
+Newgrounds 用 `dist/xiaoren-tuisan-newgrounds-v<版本>.zip`：沒有 AI 圖也沒有 AI 音樂，所有場景、紙小人、拖鞋都用程式繪製版本。
 
 ## 標題 Title
 
@@ -77,6 +77,7 @@ EN: Touch or mouse. Tap, swipe, drag and draw; each mode shows a one-line hint. 
 - 程式與文字：Claude Code（AI）撰寫
 - 美術：場景背景、符咒、貓貓神由 Google Gemini 與 Google Flow 生成；紙小人、道具、特效為程式繪製
 - 音效：全部用 Web Audio 即時合成，沒有錄音或人聲
+- 背景音樂：〈Ascent of the Jade Throne〉〈Steps of the Jade Fox〉，AI 生成
 - 字型：Noto Serif TC、Noto Sans TC、Liu Jian Mao Cao、Zhi Mang Xing、LXGW WenKai TC（SIL Open Font License 1.1）
 
 感謝玩家回報 / Thanks to everyone who reports bugs.

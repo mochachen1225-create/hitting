@@ -6,9 +6,9 @@ const { chromium } = require('playwright');
 const { serve } = require('../serve');
 const OUT = path.resolve(process.argv[2] || 'trailer-work');
 const CAPS = {
-  zh: { hook: '生活中總有一個小人…', name: '把名字寫在紙小人上', slipper: '藍白拖 30 秒打 100 下！', burn: '拿蠟燭追著燒', nail: '釘在神木上', tear: '撕成 60 片！',
+  zh: { hook: '生活中總有一個小人…', slap: '啪！', name: '把名字寫在紙小人上', slipper: '藍白拖 30 秒打 100 下！', burn: '拿蠟燭追著燒', nail: '釘在神木上', tear: '撕成 60 片！',
         beans: '鬼出去！福進來！', poe: '擲筊問神明：退散了嗎？', cat: '貓貓神下凡祈福', sunrise: '神清氣爽～', talisman: '領一張專屬符咒傳給朋友' },
-  en: { hook: 'Everyone has that ONE petty person...', name: 'Write their name on a paper man', slipper: '100 slipper slaps in 30 seconds!', burn: 'Chase it with a candle',
+  en: { hook: 'Everyone has that ONE petty person...', slap: 'SMACK!', name: 'Write their name on a paper man', slipper: '100 slipper slaps in 30 seconds!', burn: 'Chase it with a candle',
         nail: 'Nail it to a sacred tree', tear: 'Shred it into 60 pieces!', beans: 'Demons out! Luck in!', poe: 'Ask the gods: is it gone?', cat: 'The Cat God blesses you',
         sunrise: 'Ahh, refreshing~', talisman: 'Share your own talisman' }
 };
@@ -26,7 +26,7 @@ const FONTS = '<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC
       await p.setContent(`${FONTS}<style>body{margin:0;background:transparent;width:1080px}
         .wrap{display:flex;justify-content:center;padding:40px 30px}
         .cap{transform:rotate(${rot}deg);background:${bg};border:6px solid #111;border-radius:22px;padding:18px 34px;max-width:940px;box-shadow:0 12px 0 rgba(0,0,0,.35);
-          font:${lang === 'en' ? "62px 'Luckiest Guy'" : "900 66px 'Noto Sans TC'"};line-height:1.15;color:#fff;text-align:center;letter-spacing:${lang === 'en' ? '1px' : '2px'};
+          font:${key === 'slap' ? (lang === 'en' ? "190px 'Luckiest Guy'" : "900 210px 'Noto Sans TC'") : lang === 'en' ? "62px 'Luckiest Guy'" : "900 66px 'Noto Sans TC'"};line-height:1.15;color:#fff;text-align:center;letter-spacing:${lang === 'en' ? '1px' : '2px'};
           -webkit-text-stroke:12px #111;paint-order:stroke fill}</style><div class="wrap"><div class="cap" id="c">${text}</div></div>`);
       await p.evaluate(() => document.fonts.ready);
       await p.waitForTimeout(300);

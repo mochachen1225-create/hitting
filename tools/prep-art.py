@@ -156,3 +156,42 @@ for coat, f in COATS.items():
 FISH = 'Dried_anchovy_fish_snack_illustr_cf9ac30f.jpg'
 if os.path.exists(os.path.join(INBOX, FISH)):
     im = key_green(FISH); im.thumbnail((260, 260), Image.LANCZOS); save(im, 'fish', 84)
+
+# ---- props (art-inbox/props-1101/): Gemini file names are meaningless, so map them by what they show ----
+PROPS_DIR = os.path.join(INBOX, 'props-1101')
+PROPS = {  # file -> (asset name, max size)
+    'Gemini_Generated_Image_1643yd1643yd1643.jpeg': ('fuku', 160), 'Gemini_Generated_Image_7jrxym7jrxym7jrx.jpeg': ('poe-flat', 220),
+    'Gemini_Generated_Image_7t3dmj7t3dmj7t3d.jpeg': ('dart', 260), 'Gemini_Generated_Image_aye9uuaye9uuaye9.jpeg': ('paperball', 180),
+    'Gemini_Generated_Image_cogyx9cogyx9cogy.jpeg': ('oni', 200), 'Gemini_Generated_Image_dj7272dj7272dj72.jpeg': ('poe-round', 220),
+    'Gemini_Generated_Image_du68mdu68mdu68md.jpeg': ('pork', 160), 'Gemini_Generated_Image_m6co6em6co6em6co.jpeg': ('hammer', 260),
+    'Gemini_Generated_Image_okx1xdokx1xdokx1.jpeg': ('furnace', 220), 'Gemini_Generated_Image_pb88ogpb88ogpb88.jpeg': ('bean', 64),
+    'Gemini_Generated_Image_pmbd48pmbd48pmbd.jpeg': ('egg', 120), 'Gemini_Generated_Image_r9sehfr9sehfr9se.jpeg': ('candle', 220),
+    'Gemini_Generated_Image_rq8wmfrq8wmfrq8w.jpeg': ('plate', 220), 'Gemini_Generated_Image_s4zfrks4zfrks4zf.jpeg': ('trashcan', 260),
+    'Gemini_Generated_Image_u7mxb0u7mxb0u7mx.jpeg': ('tofu', 140), 'Gemini_Generated_Image_waelnpwaelnpwael.jpeg': ('smoke', 200),
+}
+
+def largest_blob(im, pick_one=False):
+    """Keep the biggest opaque blob (drops stray marks); with pick_one, the result is a single bean from the handful."""
+    from collections import deque
+    a = np.asarray(im).copy(); m = a[..., 3] > 100; h, w = m.shape
+    lab = np.zeros((h, w), np.int32); sizes = [0]; cur = 0
+    for y0, x0 in zip(*np.nonzero(m)):
+        if lab[y0, x0]: continue
+        cur += 1; q = deque([(x0, y0)]); lab[y0, x0] = cur; n = 0
+        while q:
+            x, y = q.popleft(); n += 1
+            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < w and 0 <= ny < h and m[ny, nx] and not lab[ny, nx]: lab[ny, nx] = cur; q.append((nx, ny))
+        sizes.append(n)
+    keep = int(np.argmax(sizes))
+    a[..., 3] = np.where(lab == keep, a[..., 3], 0)
+    out = Image.fromarray(a, 'RGBA'); return out.crop(out.getbbox())
+
+if os.path.isdir(PROPS_DIR):
+    for f, (name, mx) in PROPS.items():
+        p = os.path.join(PROPS_DIR, f)
+        if not os.path.exists(p): continue
+        im = key_green(os.path.join('props-1101', f))
+        im = largest_blob(im.resize((im.size[0] // 2 or 1, im.size[1] // 2 or 1), Image.LANCZOS))
+        im.thumbnail((mx, mx), Image.LANCZOS); save(im, f'prop-{name}', 84)

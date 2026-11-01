@@ -10,3 +10,7 @@ Katie 用 Gemini／Flow 生的原圖（Drive「小人退散 素材」，11/1）�
 ## 11/1 第三批（貓貓神花色＋小魚乾，綠底要去背）
 - Cat_deity_sitting_on_cloud_2e4dfc2b.jpg、_5bbd5dfe.jpg、_53b249f6.jpg（三花、白、黑）、Tabby_cat_deity_sitting_cloud_347423f3.jpg（虎斑）
 - Dried_anchovy_fish_snack_illustr_cf9ac30f.jpg（小魚乾；Drive 原檔名有「…」）
+
+## 11/1 Flow 影片
+- Hand_slapping_paper_figure_on_1943ac2f.mp4（拖鞋打紙小人，廣告鉤子）、Soybeans_thrown_at_paper_effigy_4a18a762.mp4（節分）、Sunrise_over_misty_mountains_aadf0b99.mp4（日出轉場）
+- 貓貓神現身、符咒蓋章 1080p 檔太大傳不過來，等 Katie 給小一點的版本；驚蟄那支 Drive 裡沒看到

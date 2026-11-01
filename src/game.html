@@ -118,6 +118,8 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 /* daily challenge banner */
 .daily{display:flex;align-items:center;gap:12px;width:min(100%,460px);text-align:left;padding:12px 14px;border-radius:16px;border:1.5px solid var(--talisman);background:linear-gradient(135deg,rgba(236,194,76,.22),rgba(216,64,46,.2));color:var(--paper)}
 .daily .seal{background:var(--talisman);color:#4a2a08}
+.drawcard{border-color:rgba(246,241,228,.35);background:linear-gradient(135deg,rgba(216,64,46,.25),rgba(28,25,41,.8))}
+.drawcard .seal{background:var(--cinnabar);color:#fff6ea}
 .daily-txt{flex:1;min-width:0}.daily-txt b{display:block;font-size:16px}.daily-txt small{display:block;color:var(--mist);font-size:12px;margin-top:2px}
 .daily-go{flex:none;padding:6px 14px;border-radius:99px;background:var(--cinnabar);color:#fff6ea;font-weight:700;font-size:14px}
 /* collection + score */
@@ -191,6 +193,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
   <p class="dex" id="dexLine"></p>
   <div class="row"><button id="codexBtn" class="linkbtn" type="button" data-i18n="codexOpen"></button><button id="achBtn" class="linkbtn" type="button"></button></div>
   <div id="modeGrid" class="grid"></div>
+  <button id="drawBtn" class="daily drawcard" type="button"><span class="seal">寫</span><span class="daily-txt"><b data-i18n="drawTitle"></b><small data-i18n="drawSub"></small></span><span class="daily-go" data-i18n="dailyGo"></span></button>
   <button id="randomBtn" class="btn primary" type="button" data-i18n="random"></button>
 </section>
 
@@ -276,7 +279,7 @@ const T={
   shareMsg:(h,n,v,f,sc)=>`${h}\n我把「${n}」${v}了（${sc}）\n今日運勢：${f}`,
   scoreTime:(s,g)=>`${s} 秒・評級 ${g}`,scoreSlip:(h,g)=>`30 秒打了 ${h} 下・評級 ${g}`,challenge:'你敢來挑戰嗎？👉',
   secs:s=>`${s} 秒`,hitsVal:h=>`${h} 下`,newRec:'新紀錄！',firstClear:'首次退散！',bestLine:(g,v)=>`最佳紀錄：${g}・${v}`,timeUp:'時間到，小人自己嚇跑了',
-  crit:'暴擊！×2',back:'返回',achTitle:'成就',achUnlocked:'成就解鎖',achCount:(n,m)=>`已解鎖 ${n} / ${m}`,achReward:(n,r)=>`${n} 個：${r}`,rw_goldText:'符咒金色字',rw_glow:'朱砂光框',rw_master:'退散大師印',
+  crit:'暴擊！×2',back:'返回',drawTitle:'親手畫符',drawSub:'畫一道符，貼在小人頭上，分享你的親筆符咒',drawHere:'在這裡畫符',drawClear:'清除',drawDone:'完成',drawMore:'再多畫幾筆吧',drawThrow:'點一下把符射出去',drawHint2:'看準時機點一下，把符貼到小人額頭上！',achTitle:'成就',achUnlocked:'成就解鎖',achCount:(n,m)=>`已解鎖 ${n} / ${m}`,achReward:(n,r)=>`${n} 個：${r}`,rw_goldText:'符咒金色字',rw_glow:'朱砂光框',rw_master:'退散大師印',
   disclaimer:'純屬娛樂：習俗介紹都是傳說與遊戲改編，不是真實歷史或宗教建議，也沒有任何效力。',
   codexOpen:'📜 民俗圖鑑',codexTitle:'民俗圖鑑',codexLocked:'？？？　玩過就會解鎖',codexCount:(n,m)=>`已解鎖 ${n} / ${m}`,codexNew:x=>`📜 新圖鑑：${x}`,
   poeTitle:'擲筊',poeHint:'點一下或往上滑擲筊。連續三個聖筊，運勢升級！',poeTap:'點一下擲筊',poeAsk:n=>`請問神明：「${n}」退散了嗎？`,poeLeft:n=>`還可以擲 ${n} 次`,
@@ -287,9 +290,9 @@ const T={
   medals:{gold:'金拖鞋獎',silver:'銀拖鞋獎',bronze:'銅拖鞋獎'},medalLine:(m,n)=>`獲得「${m}」：30 秒打了 ${n} 下`,medalTry:n=>`30 秒打了 ${n} 下，再快一點就有獎牌`,
   combo:'連擊',headshot:'爆頭！',sec:'秒',
   clearTitle:'神清氣爽～',clearSubs:['肩膀突然變輕了','空氣都變甜了','今天可以多吃一碗飯','嘴角自己往上揚','霉運已打包帶走'],tapOn:'點一下繼續',
-  modes:{darts:['射飛鏢','射中 10 次'],slipper:['拖鞋打','30 秒挑戰 100 下'],burn:['燒掉','拿蠟燭追著燒'],nail:['釘草人','釘滿 10 根'],tear:['撕碎','撕成 60 片碎片'],crumple:['揉爛丟掉','揉成一團丟垃圾桶'],water:['泡水','拖進水裡泡到爛'],shake:['搖到暈','撞罐子 20 下']},
-  hints:{darts:'手指從下往上滑，射出飛鏢。小人會跑，射中 10 次就贏！',slipper:'30 秒計時！小人會亂跑，追著點它打。打滿 100 下拿金拖鞋獎',burn:'手指按住拖著蠟燭，一直追著小人燒。一離開火就會熄',nail:'點小人敲釘子，釘滿 10 根就封印！一指按住它不准動，另一指敲更準',tear:'手指快速劃過就撕開，越撕越碎！撕出 60 片碎片就贏，一刀劃過好幾片更快',crumple:'手指在小人身上來回搓，揉成紙團後往上甩進垃圾桶',water:'抓住小人拖進水裡壓著。它會躲你的手指，也會偷偷溜走，要再抓回來',shake:'搖手機，或按住罐子用力甩。讓小人撞罐子 20 下就贏'},
-  verbs:{darts:'射成刺蝟',slipper:'打成扁扁',burn:'燒成灰',nail:'釘在神木上',tear:'撕成碎片',crumple:'揉爛丟進垃圾桶',water:'泡到爛掉',shake:'搖到暈倒'},
+  modes:{draw:['親手畫符','畫符貼小人'],darts:['射飛鏢','射中 10 次'],slipper:['拖鞋打','30 秒挑戰 100 下'],burn:['燒掉','拿蠟燭追著燒'],nail:['釘草人','釘滿 10 根'],tear:['撕碎','撕成 60 片碎片'],crumple:['揉爛丟掉','揉成一團丟垃圾桶'],water:['泡水','拖進水裡泡到爛'],shake:['搖到暈','撞罐子 20 下']},
+  hints:{draw:'用手指在黃紙上畫一道符，畫好按「完成」',darts:'手指從下往上滑，射出飛鏢。小人會跑，射中 10 次就贏！',slipper:'30 秒計時！小人會亂跑，追著點它打。打滿 100 下拿金拖鞋獎',burn:'手指按住拖著蠟燭，一直追著小人燒。一離開火就會熄',nail:'點小人敲釘子，釘滿 10 根就封印！一指按住它不准動，另一指敲更準',tear:'手指快速劃過就撕開，越撕越碎！撕出 60 片碎片就贏，一刀劃過好幾片更快',crumple:'手指在小人身上來回搓，揉成紙團後往上甩進垃圾桶',water:'抓住小人拖進水裡壓著。它會躲你的手指，也會偷偷溜走，要再抓回來',shake:'搖手機，或按住罐子用力甩。讓小人撞罐子 20 下就贏'},
+  verbs:{draw:'用親筆符咒封印',darts:'射成刺蝟',slipper:'打成扁扁',burn:'燒成灰',nail:'釘在神木上',tear:'撕成碎片',crumple:'揉爛丟進垃圾桶',water:'泡到爛掉',shake:'搖到暈倒'},
   react:{hit:['哎喲！','我錯了～','又是我？','下次不敢了','痛痛痛','饒命啊','嗚嗚嗚','我只是一張紙！','我要回家跟我媽講','再打我要報警了','好啦好啦我道歉','你這手勁練過的吧','我下次會乖啦','腰閃到了！'],face:['我是靠臉吃飯的！','不要打臉！明天還要拍照','我的偶像包袱啊！','臉腫了誰負責？','我的妝花了啦！','這張臉很貴的！','打臉犯規！','我的顏值掉光了'],dart:['啊！中了','好痛！','我變刺蝟了'],headshot:['正中腦門！','眼冒金星～'],miss:['射不到～','哈哈哈你射不到～','就這樣？','你是在射空氣嗎？','我閃～','左邊左邊，啊不是','眼睛要不要借你？','手很慢欸','差得遠咧～'],taunt:['打不到～','打不到～打不到～','來啊來啊～','打不到我吧略略略','你追不到我～','我還可以再跑十圈','就這點本事？','累了嗎？要不要休息','哈哈哈哈哈','慢吞吞～'],slip:['溜走了～掰掰','抓不住我啦！','滑溜溜～'],burn:['好燙啊～啊啊啊啊','燙燙燙燙燙！','救火啊！','屁股著火了！','我要變烤紙片了','誰幫我叫消防隊！','啊啊啊我的頭髮','早知道就不使壞了','好熱好熱好熱～','我只是紙啊！'],nail:['放開我！','我不敢了！','釘好緊！','我變成標本了','輕一點啦～','這是神木欸！'],tear:['我的腿！','碎了碎了','別撕了～'],crumple:['好皺！','別揉了～','我變醜了'],ball:['我變成球了…'],miss2:['丟不進～','再練練吧','差一點點'],water:['咕嚕咕嚕','我不會游泳！','好冰！','救命～'],shake:['好暈～','停！停！','我要吐了','天旋地轉']},
   fortunes:[['大吉','小人退散，貴人排隊'],['大吉','今天做什麼都順，連綠燈都等你'],['中吉','壞話傳不到你耳朵裡'],['中吉','今天的飲料第二杯半價'],['小吉','小人還在，但他今天一直塞車'],['吉','心情變好，看什麼都順眼'],['上上籤','回家摸摸貓，好運加倍']],
   blessed:['上上籤','貓貓神加持，諸事大吉']
@@ -305,7 +308,7 @@ const T={
   shareMsg:(h,n,v,f,sc)=>`${h} 小人退散!\nI just ${v} "${n}" (${sc}).\nToday's fortune: ${f}`,
   scoreTime:(s,g)=>`${s}s, grade ${g}`,scoreSlip:(h,g)=>`${h} hits in 30s, grade ${g}`,challenge:'Think you can beat me? 👉',
   secs:s=>`${s}s`,hitsVal:h=>`${h} hits`,newRec:'New record!',firstClear:'First clear!',bestLine:(g,v)=>`Best: ${g} · ${v}`,timeUp:'Time up. It ran off scared',
-  crit:'CRIT! ×2',back:'Back',achTitle:'Achievements',achUnlocked:'Achievement',achCount:(n,m)=>`Unlocked ${n} / ${m}`,achReward:(n,r)=>`${n}: ${r}`,rw_goldText:'gold talisman text',rw_glow:'cinnabar glow frame',rw_master:'Master Banisher seal',
+  crit:'CRIT! ×2',back:'Back',drawTitle:'Draw a Talisman',drawSub:'Draw your own talisman, stick it on the paper man, share it',drawHere:'Draw here',drawClear:'Clear',drawDone:'Done',drawMore:'Add a few more strokes',drawThrow:'Tap to fling the talisman',drawHint2:'Time your tap and stick the talisman on its forehead!',achTitle:'Achievements',achUnlocked:'Achievement',achCount:(n,m)=>`Unlocked ${n} / ${m}`,achReward:(n,r)=>`${n}: ${r}`,rw_goldText:'gold talisman text',rw_glow:'cinnabar glow frame',rw_master:'Master Banisher seal',
   disclaimer:'Just for fun: these folklore notes are playful retellings, not history or religious advice, and nothing here has any real effect.',
   codexOpen:'📜 Folklore',codexTitle:'Folklore',codexLocked:'??? Play to unlock',codexCount:(n,m)=>`Unlocked ${n} / ${m}`,codexNew:x=>`📜 New folklore: ${x}`,
   poeTitle:'Moon Blocks',poeHint:'Tap or swipe up to toss. Three holy cups in a row upgrades your fortune!',poeTap:'Tap to toss',poeAsk:n=>`Ask the gods: is "${n}" gone?`,poeLeft:n=>`${n} tosses left`,
@@ -316,9 +319,9 @@ const T={
   medals:{gold:'Golden Slipper',silver:'Silver Slipper',bronze:'Bronze Slipper'},medalLine:(m,n)=>`${m} medal: ${n} hits in 30 seconds`,medalTry:n=>`${n} hits in 30 seconds. A bit faster earns a medal`,
   combo:'Combo',headshot:'Headshot!',sec:'s',
   clearTitle:'Ahh, refreshing!',clearSubs:['Shoulders feel lighter','Even the air tastes sweeter','Bad luck: packed and gone','Smile unlocked','Room for a second dessert'],tapOn:'Tap to continue',
-  modes:{darts:['Darts','Land 10 hits'],slipper:['Slipper','100 hits in 30 seconds'],burn:['Burn','Chase it with a candle'],nail:['Nail','Drive 10 nails'],tear:['Tear','Shred into 60 pieces'],crumple:['Crumple & toss','Ball it up, bin it'],water:['Soak','Drown it to mush'],shake:['Shake','20 bonks in a jar']},
-  hints:{darts:'Swipe up from the bottom to throw. It moves, so aim. 10 hits wins!',slipper:'30-second round! It runs around, so chase and tap it. 100 hits wins the Golden Slipper',burn:'Hold and drag the candle. Chase the paper man and burn it',nail:'Tap it to drive a nail. 10 nails seals it. Hold it still with one finger and hammer with another',tear:'Swipe across to rip. Shred it into 60 pieces; one swipe through many pieces is faster',crumple:'Rub back and forth on it to crumple, then flick the ball into the bin',water:'Grab it, drag it underwater and hold it down',shake:'Shake your phone, or grab the jar and fling it. 20 bonks wins'},
-  verbs:{darts:'turned into a pincushion',slipper:'slippered flat',burn:'burned to ash',nail:'nailed to the sacred tree',tear:'torn to shreds',crumple:'crumpled and binned',water:'soaked to mush',shake:'shaken silly'},
+  modes:{draw:['Draw a Talisman','Draw it, stick it'],darts:['Darts','Land 10 hits'],slipper:['Slipper','100 hits in 30 seconds'],burn:['Burn','Chase it with a candle'],nail:['Nail','Drive 10 nails'],tear:['Tear','Shred into 60 pieces'],crumple:['Crumple & toss','Ball it up, bin it'],water:['Soak','Drown it to mush'],shake:['Shake','20 bonks in a jar']},
+  hints:{draw:'Draw a talisman on the yellow paper with your finger, then tap Done',darts:'Swipe up from the bottom to throw. It moves, so aim. 10 hits wins!',slipper:'30-second round! It runs around, so chase and tap it. 100 hits wins the Golden Slipper',burn:'Hold and drag the candle. Chase the paper man and burn it',nail:'Tap it to drive a nail. 10 nails seals it. Hold it still with one finger and hammer with another',tear:'Swipe across to rip. Shred it into 60 pieces; one swipe through many pieces is faster',crumple:'Rub back and forth on it to crumple, then flick the ball into the bin',water:'Grab it, drag it underwater and hold it down',shake:'Shake your phone, or grab the jar and fling it. 20 bonks wins'},
+  verbs:{draw:'sealed with a hand-drawn talisman',darts:'turned into a pincushion',slipper:'slippered flat',burn:'burned to ash',nail:'nailed to the sacred tree',tear:'torn to shreds',crumple:'crumpled and binned',water:'soaked to mush',shake:'shaken silly'},
   react:{hit:['Ouch!','Sorry!','Me again?','Never again','Ow ow ow','Mercy!','Waaah',"I'm just paper!","I'm telling my mom","I'll call the police!",'Okay okay, I apologize','Did you train for this?','My back!'],face:['This face pays my bills!','Not the face! I have a photo shoot','My good looks!','Who pays if it swells?','My makeup!','This face is expensive!','Face hits are illegal!'],dart:['Got me!','Ouch!',"I'm a pincushion"],headshot:['Right in the head!','Seeing stars'],miss:['Hahaha, missed!','Is that all?','Aiming at the air?','Dodged~','Left, left... nope','Need glasses?','So slow!','Not even close~'],taunt:["Can't hit me~","Missed me~ missed me~",'Come at me~',"Can't catch me, nyah",'Too slow~','I could run ten more laps','That all you got?','Tired already?','Hahahaha','Slowpoke~'],slip:['Slipped away, bye~',"Can't hold me!",'Slippery~'],burn:['So hot! Aaaaah!','Hot hot hot hot!','Fire!','My butt is on fire!',"I'm turning into toast",'Call the fire department!','My hair! Aaah!','Should have been nicer...',"I'm only paper!"],nail:['Let me go!','I give up!','So tight!'],tear:['My leg!','Shredded!','Stop ripping!'],crumple:['So wrinkly!','Stop it!',"I'm ugly now"],ball:["I'm a ball now..."],miss2:['Missed the bin!','Practice more','So close'],water:['Glub glub',"I can't swim!",'So cold!','Help!'],shake:['So dizzy','Stop! Stop!',"I'm gonna hurl",'Spinning...']},
   fortunes:[['大吉','Petty people gone, good people queue up'],['大吉','Even the traffic lights wait for you'],['中吉','Gossip never reaches your ears'],['中吉','Second drink half price today'],['小吉',"They're still around, but stuck in traffic"],['吉','Good mood, everything looks right'],['上上籤','Go pet a cat for double luck']],
   blessed:['上上籤','Blessed by the Cat God. All is well']
@@ -822,6 +825,57 @@ function makeShake(){const g=baseGame(),m=g.m;g.hits=0;const jw=Math.min(W*.66,2
   g.up=p=>{if(g.drag&&g.drag.id===p.id)g.drag=null;};
   return g;}
 
+/* ---------- hand-drawn talisman: draw it, then stick it on the hopping paper man ---------- */
+// strokes are stored in paper-relative units (0..1) so the shared talisman can redraw them at full size
+function drawStrokes(c,strokes,rx,ry,rw,rh,col='#b3121c'){c.save();c.strokeStyle=col;c.fillStyle=col;c.lineCap='round';c.lineJoin='round';
+  for(const st of strokes){const p=st.pts;if(p.length===1){c.beginPath();c.arc(rx+p[0][0]*rw,ry+p[0][1]*rh,p[0][2]*rw/2,0,7);c.fill();continue;}
+    for(let i=1;i<p.length;i++){c.lineWidth=Math.max(1,(p[i][2]+p[i-1][2])/2*rw);c.beginPath();c.moveTo(rx+p[i-1][0]*rw,ry+p[i-1][1]*rh);c.lineTo(rx+p[i][0]*rw,ry+p[i][1]*rh);c.stroke();}}
+  c.restore();}
+function inkLength(strokes){let L=0;for(const st of strokes)for(let i=1;i<st.pts.length;i++)L+=Math.hypot(st.pts[i][0]-st.pts[i-1][0],(st.pts[i][1]-st.pts[i-1][1])/1.9);return L;}
+function makeDraw(){const g=baseGame(),m=g.m;m.s*=.62;m.y=H*.3;m.x=-80;m.alpha=0;g.phase='draw';g.strokes=[];g.cur=null;
+  const pw=Math.min(W*.62,H*.6/1.9,300),ph=pw*1.9,pr={x:(W-pw)/2,y:Math.max(110,H*.13),w:pw,h:ph};g.pr=pr;
+  const btnY=Math.min(H-70,pr.y+ph+44),btns={clear:{x:W*.3,y:btnY},done:{x:W*.7,y:btnY}};
+  g.fly=null;g.hop=0;g.dir=1;
+  const tryThrow=()=>{if(g.fly||g.done)return;g.fly={x:W/2,y:H-110,t:0};sfx('whoosh');};
+  g.update=dt=>{tickFace(m,dt);
+    if(g.phase==='stick'){
+      if(!g.stuck){m.alpha=Math.min(1,m.alpha+dt*3);g.hop+=dt*5;m.x+=g.dir*(90+g.tries*25)*dt;if(m.x>W-60*m.s){g.dir=-1;}if(m.x<60*m.s){g.dir=1;}
+        m.y=H*.3-Math.abs(Math.sin(g.hop))*40;m.rot=Math.sin(g.hop)*.08;}
+      if(g.fly){const f=g.fly;f.t+=dt;f.y-=1200*dt;const tx=m.x,ty=m.y-68*m.s;
+        if(!g.stuck&&Math.abs(f.x-tx)<55*m.s&&f.y<=ty+20){g.stuck=true;g.fly=null;g.stickT=0;sfx('stamp');shake(8,.25);buzz([20,30,60]);setFace(m,'dizzy',9);sparks(tx,ty,24,'#ffe7a8');say('nail',m.x,headY(m),true);ach('artist');}
+        else if(f.y<-60){g.fly=null;g.tries++;say('miss',m.x,headY(m),true);}}
+      if(g.stuck){g.stickT+=dt;m.rot=Math.sin(g.stickT*40)*.03*(1-Math.min(1,g.stickT));if(g.stickT>1.1&&!g.done){m.hp=0;damage(g,999);paperBurst(m.x,m.y,30,300);}
+        if(g.done)m.alpha=Math.max(0,m.alpha-dt*1.5);}}
+    endCheck(g,dt);};
+  const talismanSmall=(c,x,y,sc,rot)=>{c.save();c.translate(x,y);c.rotate(rot);const w=pr.w*sc,h=pr.h*sc;
+    if(IMG.paper)c.drawImage(IMG.paper,-w/2,-h/2,w,h);else{c.fillStyle='#eec44a';c.fillRect(-w/2,-h/2,w,h);}
+    drawStrokes(c,g.strokes,-w/2,-h/2,w,h);c.restore();};
+  g.draw=c=>{artBg(c,'poe')||drawBg(c,'#24120f','#0d0807');
+    if(g.phase==='draw'){
+      c.save();c.shadowColor='rgba(0,0,0,.5)';c.shadowBlur=24;c.shadowOffsetY=10;if(IMG.paper)c.drawImage(IMG.paper,pr.x,pr.y,pr.w,pr.h);else{c.fillStyle='#eec44a';c.fillRect(pr.x,pr.y,pr.w,pr.h);}c.restore();
+      c.strokeStyle='rgba(179,18,28,.25)';c.lineWidth=2;c.setLineDash([6,6]);c.strokeRect(pr.x+pr.w*.08,pr.y+pr.h*.05,pr.w*.84,pr.h*.9);c.setLineDash([]);
+      drawStrokes(c,g.strokes,pr.x,pr.y,pr.w,pr.h);
+      if(!g.strokes.length){c.save();c.globalAlpha=.55+Math.sin(g.t*3)*.2;c.fillStyle='#7a1a10';c.textAlign='center';c.font=`700 ${Math.min(17,W*.044)}px ${FONT_B}`;c.fillText(t('drawHere'),W/2,pr.y+pr.h/2);c.restore();}
+      const ok=inkLength(g.strokes)>.8;
+      [['clear',t('drawClear'),'rgba(28,25,41,.85)'],['done',t('drawDone'),ok?'#d8402e':'rgba(216,64,46,.35)']].forEach(([k,lbl,bg])=>{const b=btns[k];c.fillStyle=bg;rr(c,b.x-62,b.y-22,124,44,22);c.fill();c.strokeStyle='rgba(246,241,228,.35)';c.lineWidth=1.5;c.stroke();
+        c.fillStyle='#fff6ea';c.font=`700 15px ${FONT_B}`;c.textAlign='center';c.textBaseline='middle';c.fillText(lbl,b.x,b.y+1);});}
+    else{drawMan(c,m);
+      if(g.stuck){const sc=Math.max(.09,62*m.s/pr.h),hh=pr.h*sc,cx0=m.x+Math.sin(m.rot)*80*m.s;talismanSmall(c,cx0,m.y-86*m.s+hh/2,sc,m.rot+Math.sin(g.stickT*30)*.04*(1-Math.min(1,g.stickT)));}
+      if(g.fly)talismanSmall(c,g.fly.x,g.fly.y,.3,Math.sin(g.fly.t*20)*.2);
+      else if(!g.stuck){const bob=Math.sin(g.t*4)*4;talismanSmall(c,W/2,H-110+bob,.3,0);c.save();c.globalAlpha=.6+Math.sin(g.t*4)*.25;c.fillStyle='#f6f1e4';c.textAlign='center';c.font=`700 15px ${FONT_B}`;c.fillText(t('drawThrow'),W/2,H-110-pr.h*.17-14);c.restore();}}};
+  const inPaper=p=>p.x>=pr.x&&p.x<=pr.x+pr.w&&p.y>=pr.y&&p.y<=pr.y+pr.h;
+  const toN=p=>[(p.x-pr.x)/pr.w,(p.y-pr.y)/pr.h];
+  g.down=p=>{if(g.phase==='stick'){tryThrow();return;}
+    const hit=k=>Math.abs(p.x-btns[k].x)<64&&Math.abs(p.y-btns[k].y)<26;
+    if(hit('clear')){g.strokes=[];sfx('tear');return;}
+    if(hit('done')){if(inkLength(g.strokes)>.8){g.phase='stick';g.tries=0;S.drawStrokes=g.strokes;sfx('ding');showHint(t('drawHint2'));}else toast(t('drawMore'));return;}
+    if(inPaper(p)){const [nx,ny]=toN(p);g.cur={id:p.id,pts:[[nx,ny,.05]],lt:performance.now()};g.strokes.push(g.cur);}};
+  g.move=p=>{const s0=g.cur;if(!s0||s0.id!==p.id||g.phase!=='draw')return;const [nx,ny]=toN(p),now=performance.now(),last=s0.pts[s0.pts.length-1];
+    const d=Math.hypot((nx-last[0])*pr.w,(ny-last[1])*pr.h);if(d<2)return;const sp=d/Math.max(1,now-s0.lt);s0.lt=now;
+    const w=clamp(.075-sp*.03,.022,.075);s0.pts.push([clamp(nx,0,1),clamp(ny,0,1),last[2]*.6+w*.4]);if(Math.random()<.15)sfx('crumple');};
+  g.up=p=>{if(g.cur&&g.cur.id===p.id)g.cur=null;};
+  return g;}
+
 /* ---------- cat easter egg ---------- */
 const COATS=[{base:'#e7953f',stripe:'#b8641c',chest:'#f8e2c4',eye:'#9bd36a'},{base:'#2b2a30',stripe:null,chest:'#2b2a30',eye:'#e8c547'},{base:'#9299a3',stripe:'#5f6670',chest:'#e7e7ea',eye:'#7ec4e8'},{base:'#f4f2ee',stripe:null,chest:'#ffffff',eye:'#7ec4e8'},{base:'#f4f0ea',stripe:null,chest:'#ffffff',eye:'#d9b23a',calico:true}];
 function drawCat(c,k,coat,s,happy,tail){c.save();c.translate(k.x,k.y);c.scale(s,s);
@@ -934,10 +988,16 @@ function startPoe(next){P.length=0;bubbles.length=0;ptrs.clear();$('.hp').hidden
   G=g;}
 
 /* ---------- talisman image ---------- */
-async function paintedTalisman(img,name,verb,fortune,blessed){
+async function paintedTalisman(img,name,verb,fortune,blessed){return composeTalisman(x=>{const ih=1080*img.height/img.width;x.drawImage(img,0,0,1080,ih);return ih;},name,verb,fortune,blessed);}
+// the player's own strokes on blank talisman paper
+async function drawnTalisman(strokes,name,verb,fortune,blessed){const paper=await Promise.race([ART_WAIT.paper,new Promise(r=>setTimeout(()=>r(null),2500))]);
+  return composeTalisman(x=>{const R=Math.random;for(let i=0;i<90;i++){x.fillStyle=`rgba(246,241,228,${R()*.3})`;x.beginPath();x.arc(R()*1080,R()*1700,R()*2.5+.5,0,7);x.fill();}
+    const pw=760,ph=pw*1.9,px=160,py=70;x.save();x.shadowColor='rgba(0,0,0,.6)';x.shadowBlur=50;x.shadowOffsetY=18;if(paper)x.drawImage(paper,px,py,pw,ph);else{x.fillStyle='#eec44a';x.fillRect(px,py,pw,ph);}x.restore();
+    x.save();x.globalAlpha=.94;x.shadowColor='rgba(120,10,10,.45)';x.shadowBlur=4;drawStrokes(x,strokes,px,py,pw,ph,'#c0141c');x.restore();return py+ph+70;},name,verb,fortune,blessed);}
+async function composeTalisman(drawTop,name,verb,fortune,blessed){
   const c=document.createElement('canvas');c.width=1080;c.height=2400;const x=c.getContext('2d'),R=Math.random;
   x.fillStyle='#0d0b14';x.fillRect(0,0,1080,2400);
-  const ih=1080*img.height/img.width;x.drawImage(img,0,0,1080,ih);
+  const ih=drawTop(x);
   if(allCleared()){x.save();x.globalCompositeOperation='soft-light';const gg=x.createLinearGradient(0,0,1080,ih);gg.addColorStop(0,'#fff3b0');gg.addColorStop(.5,'#ffd34d');gg.addColorStop(1,'#fff0a0');x.fillStyle=gg;x.fillRect(0,0,1080,ih);x.restore();
     for(let i=0;i<50;i++){const sx=180+R()*720,sy=120+R()*(ih-240),r=2+R()*5;x.fillStyle=`rgba(255,255,240,${.4+R()*.5})`;x.beginPath();x.moveTo(sx,sy-r*2);x.lineTo(sx+r*.5,sy);x.lineTo(sx,sy+r*2);x.lineTo(sx-r*.5,sy);x.closePath();x.fill();}}
   const band=x.createLinearGradient(0,ih-260,0,ih+40);band.addColorStop(0,'rgba(13,11,20,0)');band.addColorStop(1,'rgba(13,11,20,1)');x.fillStyle=band;x.fillRect(0,ih-260,1080,300);x.fillStyle='#0d0b14';x.fillRect(0,ih+39,1080,2400-ih);
@@ -969,6 +1029,7 @@ async function makeTalisman(name,verb,fortune,blessed,plain){
   try{await Promise.race([Promise.all([document.fonts.load(`900 120px ${FONT_D}`,TXT),document.fonts.load('120px "Liu Jian Mao Cao"',TXT),document.fonts.load('120px "Zhi Mang Xing"',TXT),document.fonts.load('700 120px "LXGW WenKai TC"',TXT)]),new Promise(r=>setTimeout(r,2500))]);}catch(e){}
   // preferred look: a painted talisman with the name and fortune written on a band beneath it
   const ARTFU=plain?null:await Promise.race([Promise.all([ART_WAIT.fu1,ART_WAIT.fu2]).then(a=>a.filter(Boolean)),new Promise(r=>setTimeout(()=>r([]),2500))]);
+  if(!plain&&S.mode==='draw'&&S.drawStrokes&&S.drawStrokes.length)return drawnTalisman(S.drawStrokes,name,verb,fortune,blessed);
   if(ARTFU&&ARTFU.length)return paintedTalisman(pick(ARTFU),name,verb,fortune,blessed);
   const c=document.createElement('canvas');c.width=1080;c.height=1500;const x=c.getContext('2d');
   const R=(()=>{let s=7;return()=>(s=(s*16807)%2147483647)/2147483647;})();
@@ -1073,7 +1134,7 @@ async function makeTalisman(name,verb,fortune,blessed,plain){
   catch(e){if(plain)throw e;return makeTalisman(name,verb,fortune,blessed,true);}}
 
 /* ---------- flow ---------- */
-const MAKERS={darts:makeDarts,slipper:makeSlipper,burn:makeBurn,nail:makeNail,tear:makeTear,crumple:makeCrumple,water:makeWater,shake:makeShake};
+const MAKERS={draw:makeDraw,darts:makeDarts,slipper:makeSlipper,burn:makeBurn,nail:makeNail,tear:makeTear,crumple:makeCrumple,water:makeWater,shake:makeShake};
 let G=null,screen='intro';const ROUND_MAX=60;
 /* folklore codex: playful retellings, unlocked by playing */
 const CODEX=[
@@ -1115,6 +1176,7 @@ const ACH=[
  ['midnight','丑時退散','凌晨 1～3 點完成一局','Hour of the Ox','Finish a round between 1 and 3 a.m.'],
  ['timeout','慢慢來','撐到時間到才結束','Taking It Easy','Let a round run out the clock'],
  ['share','廣結善緣','分享一次符咒','Spread the Word','Share a talisman'],
+ ['artist','親筆畫符','把親手畫的符貼到小人頭上','Calligrapher','Stick your hand-drawn talisman on the paper man'],
  ['folklore','民俗學者','民俗圖鑑全部解鎖','Folklorist','Unlock every folklore card']
 ];
 const ACH_REWARDS=[[5,'goldText'],[10,'glow'],[15,'master']];
@@ -1165,7 +1227,7 @@ function better(a,b){if(!b)return true;if(GRADE_RANK[a.grade]!==GRADE_RANK[b.gra
 let BEST=store.get('best',{});if(!BEST||typeof BEST!=='object')BEST={};
 const clearedCount=()=>MODE_IDS.filter(id=>BEST[id]).length;
 const allCleared=()=>clearedCount()===MODE_IDS.length;
-function recordScore(g){markCodex(S.mode);const slip=S.mode==='slipper',secs=slip?(S.slipSecs||SLIP_TIME):(g.clearT!=null?g.clearT:g.t);
+function recordScore(g){if(S.mode==='draw'){S.score=null;return;}markCodex(S.mode);const slip=S.mode==='slipper',secs=slip?(S.slipSecs||SLIP_TIME):(g.clearT!=null?g.clearT:g.t);
   const sc={mode:S.mode,secs:Math.round(secs*10)/10,hits:S.slipHits||0,timeout:!!g.timeout};sc.grade=gradeOf(S.mode,secs,sc.hits,sc.timeout);
   if(S.daily){const td=todayChallenge(),d=getDaily(),yd=dayKey(new Date(Date.now()-864e5));
     if(d.last!==td.key){d.streak=d.last===yd?(d.streak||0)+1:1;d.last=td.key;d.best=null;}
@@ -1255,6 +1317,7 @@ $('#achBtn').addEventListener('click',()=>show('achScr'));
 $('#achBack').addEventListener('click',()=>show('modesScr'));
 $('#lineBtn').addEventListener('click',()=>ach('share'));
 $('#codexBack').addEventListener('click',()=>show('modesScr'));
+$('#drawBtn').addEventListener('click',()=>{audioInit();startMode('draw');});
 $('#dailyBtn').addEventListener('click',()=>{audioInit();startMode(todayChallenge().mode,true);});
 $('#randomBtn').addEventListener('click',()=>{audioInit();const cards=[...document.querySelectorAll('.card')];const final=Math.floor(Math.random()*cards.length);let i=0;const total=14+final;
   $('#randomBtn').disabled=true;const step=()=>{cards.forEach(c=>c.classList.remove('lit'));cards[i%cards.length].classList.add('lit');sfx('pop');
@@ -1275,7 +1338,7 @@ function loop(now){const dt=Math.min(.05,(now-last)/1000)||.016;last=now;cx.setT
   if(G&&freezeT>0)freezeT-=dt;
   else if(G){G.t+=dt;
     // every round has an end: 60 s cap (the slipper round runs its own 30 s clock)
-    if(G.m&&S.mode!=='slipper'){const left=Math.max(0,roundMax()-G.t),el=$('#hudTime');if(!G.done&&left<=0){G.timeout=true;damage(G,999);}
+    if(G.m&&S.mode!=='slipper'&&S.mode!=='draw'){const left=Math.max(0,roundMax()-G.t),el=$('#hudTime');if(!G.done&&left<=0){G.timeout=true;damage(G,999);}
       const txt=G.done?'':`${Math.ceil(left)} ${t('sec')}`;if(el.textContent!==txt)el.textContent=txt;el.classList.toggle('low',left<10);}
     G.update(dt);}
   if(G)G.draw(cx);else drawAmbient(cx,dt);

@@ -100,7 +100,8 @@
 | `VERSION` | 版本號（要和 `src/game.html` 的 `VERSION` 常數一致） |
 | `tools/package.sh` | 打包 itch.io（含 AI 圖）和 Newgrounds（無 AI 圖）的上傳壓縮檔到 `dist/`，Mac、Linux 都能跑 |
 | `tools/make-promo.js` | 從真實遊戲拍中英文截圖和 itch 封面到 `promo/` |
-| `promo/` | 上架用截圖（`en/`、`zh/`）和 itch 封面 |
+| `promo/` | 上架用截圖（`en/`、`zh/`）、itch 封面、試玩廣告 `trailer-zh.mp4`／`trailer-en.mp4`（直式 26 秒） |
+| `tools/trailer/` | 試玩廣告：`stage.js` 用虛擬時鐘連拍遊戲畫面、`cards.js` 做字卡和片尾卡、`build.py` 用 ffmpeg 剪輯配樂 |
 | `docs/itch-page.md` | itch.io 上架設定、中英文案、AI 標示、標籤 |
 | `tools/serve.js` | 測試用的本機伺服器（用 `file://` 開的頁面不能匯出含圖片的符咒） |
 | `NOTES.md` | 開發進度、設計決定、還沒做的想法 |

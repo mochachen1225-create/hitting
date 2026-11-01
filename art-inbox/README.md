@@ -14,3 +14,6 @@ Katie 用 Gemini／Flow 生的原圖（Drive「小人退散 素材」，11/1）�
 ## 11/1 Flow 影片
 - Hand_slapping_paper_figure_on_1943ac2f.mp4（拖鞋打紙小人，廣告鉤子）、Soybeans_thrown_at_paper_effigy_4a18a762.mp4（節分）、Sunrise_over_misty_mountains_aadf0b99.mp4（日出轉場）
 - 貓貓神現身、符咒蓋章 1080p 檔太大傳不過來，等 Katie 給小一點的版本；驚蟄那支 Drive 裡沒看到
+
+## 11/1 道具小圖 16 張（props-1101/，綠底要去背）
+_contact_sheet.jpg 是縮圖總覽（檔名排序，4×4）：福字春聯、筊杯平面、飛鏢、紙團／鬼面具、筊杯凸面、五花肉、鐵鎚／金爐、黃豆、鴨蛋、蠟燭／空盤、垃圾桶、豆干、黑煙小人。Gemini 原檔名沒有意義，請照縮圖對應後自己改名。

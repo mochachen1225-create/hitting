@@ -2,12 +2,14 @@
 // Usage: node tools/smoke.js   (needs Playwright + Chromium; run from the repo root)
 const path = require('path');
 const { chromium } = require('playwright');
+const { serve } = require('./serve');
 (async () => {
+  const srv = await serve('.');
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 390, height: 760 }, hasTouch: true });
   const errs = [];
   p.on('pageerror', e => errs.push(e.message));
-  await p.goto('file://' + path.resolve('index.html'));
+  await p.goto(srv.url);
   await p.click('[data-lang="zh"]');
   await p.click('#toModes');
   for (const m of ['darts', 'slipper', 'burn', 'nail', 'tear', 'crumple', 'water', 'shake']) {
@@ -28,5 +30,6 @@ const { chromium } = require('playwright');
   }
   console.log(errs.length ? 'ERRORS:\n' + errs.join('\n') : 'no page errors');
   await b.close();
+  srv.close();
   process.exit(errs.length ? 1 : 0);
 })();

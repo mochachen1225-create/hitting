@@ -86,13 +86,18 @@
 | `og.png` | 貼連結到社群時的預覽圖（1200×630） |
 | `icon-*.png`、`manifest.webmanifest` | 加入主畫面用的圖示和設定 |
 | `tools/make-images.js` | 用遊戲的繪圖程式重新產生預覽圖和圖示 |
+| `assets/` | AI 生成的背景、符咒、貓貓神（WebP） |
+| `tools/prep-art.py` | 把原始 AI 圖轉成 `assets/`（縮圖、壓縮、去背），檔案對應寫在腳本裡 |
+| `tools/serve.js` | 測試用的本機伺服器（用 `file://` 開的頁面不能匯出含圖片的符咒） |
 | `NOTES.md` | 開發進度、設計決定、還沒做的想法 |
 
 修改流程：改 `src/game.html` → `sh tools/build.sh` → `node tools/smoke.js` → 更新 `NOTES.md`。
 
 ## 素材來源
 
-**圖像**：紙小人、拖鞋、飛鏢、蠟燭、神木、垃圾桶、罐子、貓貓神、符咒等所有圖案，都是用 Canvas 程式即時畫出來的，沒有使用外部圖片。
+**圖像**
+- **AI 生成**：12 張場景背景、符咒紙、兩張裝飾版符咒（分享圖用）、貓貓神角色，由開發者使用 Google Gemini 與 Google Flow 生成，再壓縮成 WebP、去背（`tools/prep-art.py`）。上架 itch.io 時會勾選 AI Generated Graphics。
+- **程式繪製**：紙小人、拖鞋、飛鏢、蠟燭、筊杯、垃圾桶、罐子、小魚乾等會動的東西，都是 Canvas 即時畫的。每個場景也保留一套程式畫的備用版本，AI 圖沒載入時照樣能玩。
 
 **音效**：全部用 Web Audio API 即時合成（拍打、火焰、敲釘、撕紙、水花、貓叫、呼嚕等），沒有錄音檔，也沒有人聲。
 

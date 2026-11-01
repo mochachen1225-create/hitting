@@ -3,12 +3,14 @@
 const fs = require('fs');
 const path = require('path');
 const { chromium } = require('playwright');
+const { serve } = require('./serve');
 const save = (file, dataUrl) => fs.writeFileSync(file, Buffer.from(dataUrl.split(',')[1], 'base64'));
 
 (async () => {
+  const srv = await serve('.');
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 390, height: 760 } });
-  await p.goto('file://' + path.resolve('index.html'));
+  await p.goto(srv.url);
   await p.click('[data-lang="zh"]');
   await p.waitForTimeout(300);
 
@@ -28,16 +30,15 @@ const save = (file, dataUrl) => fs.writeFileSync(file, Buffer.from(dataUrl.split
 
   // 1200x630 share preview
   save('og.png', await p.evaluate(async () => {
-    S.mode = 'slipper'; S.medal = null; S.headline = '小人退散成功～';
-    const tal = await makeTalisman('臭小人', '打成扁扁', ['大吉', '小人退散，貴人排隊'], true);
-    const img = new Image(); img.src = tal.url; await img.decode();
+    const img = await ART_WAIT.fu1, bgArt = await ART_WAIT.menu;
     await document.fonts.load(`900 120px ${FONT_D}`, '小人退散打手機小遊戲種法');
     const c = document.createElement('canvas'); c.width = 1200; c.height = 630; const x = c.getContext('2d');
     const bg = x.createLinearGradient(0, 0, 0, 630); bg.addColorStop(0, '#1c1828'); bg.addColorStop(1, '#0b0a12'); x.fillStyle = bg; x.fillRect(0, 0, 1200, 630);
+    if (bgArt) { const sc = 1200 / bgArt.width; x.drawImage(bgArt, 0, (630 - bgArt.height * sc) / 2, 1200, bgArt.height * sc); x.fillStyle = 'rgba(14,11,22,.55)'; x.fillRect(0, 0, 1200, 630); }
     const rg = x.createRadialGradient(360, 300, 0, 360, 300, 520); rg.addColorStop(0, 'rgba(216,64,46,.28)'); rg.addColorStop(1, 'rgba(216,64,46,0)'); x.fillStyle = rg; x.fillRect(0, 0, 1200, 630);
     for (let i = 0; i < 60; i++) { x.fillStyle = `rgba(246,241,228,${Math.random() * .3})`; x.beginPath(); x.arc(Math.random() * 1200, Math.random() * 630, Math.random() * 2.5 + .5, 0, 7); x.fill(); }
     x.save(); x.translate(930, 320); x.rotate(.07); x.shadowColor = 'rgba(0,0,0,.6)'; x.shadowBlur = 40; x.shadowOffsetY = 14;
-    const sw = 680, sh = 1300, k = 560 / sh; x.drawImage(img, 200, 50, sw, sh, -sw * k / 2, -280, sw * k, sh * k); x.restore();
+    const sx0 = img.width * .055, sy0 = img.height * .03, sw = img.width * .89, sh = img.height * .94, k = 580 / sh; x.drawImage(img, sx0, sy0, sw, sh, -sw * k / 2, -290, sw * k, sh * k); x.restore();
     const m = newMan(0, 0, 1); m.name = '臭小人'; m.face = 'hit'; m.bruises = [[-20, -10, 14], [18, 20, 12], [0, -75, 10]];
     x.save(); x.translate(640, 360); x.rotate(-.12); x.scale(1.25, 1.25); drawManLocal(x, m); x.restore();
     drawSlipper(x, 700, 250, -.5, 1.05, 1);
@@ -51,5 +52,6 @@ const save = (file, dataUrl) => fs.writeFileSync(file, Buffer.from(dataUrl.split
   }));
 
   await b.close();
+  srv.close();
   console.log('wrote og.png, icon-180.png, icon-192.png, icon-512.png');
 })();

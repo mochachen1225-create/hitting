@@ -14,6 +14,13 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="小人退散：拖鞋打臭小人和一張黃色符咒">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="小人退散">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://mochachen1225-create.github.io/hitting/og.png">
 <meta name="theme-color" content="#100e18">
@@ -119,9 +126,24 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .bless{color:var(--talisman);font-size:14px;margin:0}
 .share-col{display:flex;flex-direction:column;gap:10px;width:min(100%,360px)}
 .share-col .btn{width:100%}
+/* collection + score */
+.card{position:relative}
+.badge{position:absolute;top:6px;right:9px;font-family:var(--font-display);font-weight:900;font-size:16px;color:var(--paper)}
+.badge.gS{color:var(--talisman)}.badge.gB,.badge.gC{color:var(--mist)}
+.badge.none{font-family:var(--font-body);font-weight:400;font-size:11px;color:rgba(169,163,191,.6)}
+.dex{margin:0;color:var(--mist);font-size:13px}.dex.gold{color:var(--talisman)}
+.score{display:flex;align-items:center;gap:14px}
+.grade{flex:none;width:64px;height:64px;border-radius:50%;display:grid;place-items:center;font-family:var(--font-display);font-weight:900;font-size:38px;background:var(--cinnabar);color:#fff6ea;box-shadow:inset 0 0 0 3px rgba(255,246,234,.4);transform:rotate(-8deg);animation:stampIn .5s .3s cubic-bezier(.2,1.6,.4,1) both}
+.grade.gS{background:var(--talisman);color:#4a2a08}
+.grade.gB,.grade.gC{background:#5b5670}
+@keyframes stampIn{from{transform:scale(2.4) rotate(-24deg);opacity:0}to{transform:rotate(-8deg);opacity:1}}
+.score-txt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left}
+.score-txt b{font-size:20px}
+.newrec{color:#ffd34d;font-weight:700;font-size:14px}
+.score-txt small{color:var(--mist);font-size:12px}
 #toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--paper);color:var(--night);padding:10px 16px;border-radius:12px;font-size:14px;font-weight:700;width:max-content;max-width:88vw;z-index:9;box-shadow:0 8px 30px rgba(0,0,0,.4)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-@media (prefers-reduced-motion:reduce){.ripples i,.water .rise,.intro-sub,.lang,#hint{animation:none}}
+@media (prefers-reduced-motion:reduce){.ripples i,.water .rise,.intro-sub,.lang,#hint,.grade{animation:none}}
 </style>
 
 <canvas id="stage"></canvas>
@@ -170,6 +192,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 <section id="modesScr" class="screen" hidden>
   <div class="target"><span data-i18n="target"></span><b id="tgtName"></b><button id="editName" class="linkbtn" type="button" data-i18n="edit"></button></div>
   <h2 data-i18n="modesTitle"></h2>
+  <p class="dex" id="dexLine"></p>
   <div id="modeGrid" class="grid"></div>
   <button id="randomBtn" class="btn primary" type="button" data-i18n="random"></button>
 </section>
@@ -177,6 +200,8 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 <section id="result" class="screen top" hidden>
   <h2 id="resHead"></h2>
   <p class="sub" id="resLine"></p>
+  <div class="score" id="resScore" hidden><span class="grade" id="resGrade"></span><span class="score-txt"><b id="resTime"></b><span class="newrec" id="resNew"></span><small id="resBest"></small></span></div>
+  <p class="bless" id="resGold" hidden></p>
   <img id="talImg" alt="">
   <p class="fortune" id="resFortune"></p>
   <p class="bless" id="resMedal" hidden></p>
@@ -232,7 +257,10 @@ const T={
   share:'分享符咒圖（可選 LINE）',lineText:'只傳文字到 LINE',again:'再打一次',other:'換個玩法',newT:'換個小人',
   holdHint:'長按符咒圖就能儲存，再從 LINE 傳給朋友。',saved:'符咒圖存好了，打開 LINE 選「相片」就能傳。',
   catBless:'貓貓神吃了小魚乾，賜你上上籤！',catHint:'小魚乾會逃走！先抓住它，再拖給貓貓神',catSkip:'略過',meow:'喵～小魚乾呢？',catTitle:'貓貓神',catTitle2:'貓貓神下凡來為你祈福！',catSub:'送上小魚乾吧～',catSay:'喵～吾乃貓貓神',catThanks:'喵！賜你好運～',
-  shareMsg:(h,n,v,f)=>`${h}\n我剛剛把「${n}」${v}了。\n今日運勢：${f}`,
+  shareMsg:(h,n,v,f,sc)=>`${h}\n我把「${n}」${v}了（${sc}）\n今日運勢：${f}`,
+  scoreTime:(s,g)=>`${s} 秒・評級 ${g}`,scoreSlip:(h,g)=>`30 秒打了 ${h} 下・評級 ${g}`,challenge:'你敢來挑戰嗎？👉',
+  secs:s=>`${s} 秒`,hitsVal:h=>`${h} 下`,newRec:'新紀錄！',firstClear:'首次退散！',bestLine:(g,v)=>`最佳紀錄：${g}・${v}`,timeUp:'時間到，小人自己嚇跑了',
+  crit:'暴擊！×2',dex:n=>`退散圖鑑 ${n} / 8`,dexHint:'八法全破，解鎖金符',dexGold:'金符已解鎖 ✨',goldUnlocked:'八法全破！之後的符咒都是金符 ✨',notYet:'未挑戰',
   headlines:['小人退散成功～','小人已退散，好運請進！','報告！小人已清除完畢','今日小人處理完畢，收工！','小人退散　萬歲！','霉運退散，貴人快來～','打完收工，神清氣爽','小人走開，好運過來','本日小人額度已用完'],
   medals:{gold:'金拖鞋獎',silver:'銀拖鞋獎',bronze:'銅拖鞋獎'},medalLine:(m,n)=>`獲得「${m}」：30 秒打了 ${n} 下`,medalTry:n=>`30 秒打了 ${n} 下，再快一點就有獎牌`,
   combo:'連擊',headshot:'爆頭！',sec:'秒',
@@ -252,7 +280,10 @@ const T={
   share:'Share the talisman (LINE etc.)',lineText:'Send text only to LINE',again:'Again',other:'Another way',newT:'New target',
   holdHint:'Long-press the talisman to save it, then send it on LINE.',saved:'Talisman saved. Open LINE and attach it from Photos.',
   catBless:'The Cat God ate the fish and blessed you!',catHint:'The fish runs away! Catch it, then drag it to the Cat God',catSkip:'Skip',meow:'Meow... where is my fish?',catTitle:'Cat God',catTitle2:'The Cat God descends to bless you!',catSub:'Offer some dried fish~',catSay:'Meow. I am the Cat God',catThanks:'Meow! Good luck to you~',
-  shareMsg:(h,n,v,f)=>`${h} 小人退散!\nI just ${v} "${n}".\nToday's fortune: ${f}`,
+  shareMsg:(h,n,v,f,sc)=>`${h} 小人退散!\nI just ${v} "${n}" (${sc}).\nToday's fortune: ${f}`,
+  scoreTime:(s,g)=>`${s}s, grade ${g}`,scoreSlip:(h,g)=>`${h} hits in 30s, grade ${g}`,challenge:'Think you can beat me? 👉',
+  secs:s=>`${s}s`,hitsVal:h=>`${h} hits`,newRec:'New record!',firstClear:'First clear!',bestLine:(g,v)=>`Best: ${g} · ${v}`,timeUp:'Time up. It ran off scared',
+  crit:'CRIT! ×2',dex:n=>`Banish log ${n} / 8`,dexHint:'Clear all 8 to unlock the gold talisman',dexGold:'Gold talisman unlocked ✨',goldUnlocked:'All 8 cleared! Your talismans are gold now ✨',notYet:'New',
   headlines:['Petty person banished!','Bad luck, begone!','Mission complete: jerk removed','Petty people out, good luck in','Done and dusted. Feeling great','Banished with style','Daily jerk quota: used up'],
   medals:{gold:'Golden Slipper',silver:'Silver Slipper',bronze:'Bronze Slipper'},medalLine:(m,n)=>`${m} medal: ${n} hits in 30 seconds`,medalTry:n=>`${n} hits in 30 seconds. A bit faster earns a medal`,
   combo:'Combo',headshot:'Headshot!',sec:'s',
@@ -323,6 +354,7 @@ const SFX={
   ding(){[1046.5,1318.5,1568,2093].forEach((f,i)=>tone({type:'triangle',freq:f,peak:.22,dec:.7,delay:i*.09}));},
   drip(){tone({freq:1400,freqEnd:500,peak:.2,dec:.15});tone({freq:900,freqEnd:300,peak:.08,dec:.25,delay:.18});},
   chomp(){noise({freq:900,peak:.4,dec:.05});noise({freq:700,peak:.35,dec:.05,delay:.12});},
+  crit(){tone({type:'triangle',freq:95,freqEnd:38,peak:.9,dec:.35});noise({type:'lowpass',freq:1600,freqEnd:200,peak:.6,dec:.25});tone({freq:1560,peak:.18,dec:.4,delay:.03});},
   stamp(){tone({type:'triangle',freq:120,freqEnd:50,peak:.7,dec:.2});noise({type:'lowpass',freq:800,peak:.4,dec:.08});},
   meow(){const c=A.ctx,t0=c.currentTime;const o=c.createOscillator();o.type='sawtooth';o.frequency.setValueAtTime(520,t0);o.frequency.linearRampToValueAtTime(820,t0+.18);o.frequency.linearRampToValueAtTime(470,t0+.55);
     const f=c.createBiquadFilter();f.type='bandpass';f.Q.value=3;f.frequency.setValueAtTime(900,t0);f.frequency.linearRampToValueAtTime(1800,t0+.2);f.frequency.linearRampToValueAtTime(1000,t0+.55);
@@ -427,7 +459,7 @@ function drawParticles(c){for(const p of P){const k=1-p.t/p.life;c.save();c.glob
    case 'paper':c.translate(p.x,p.y);c.rotate(p.rot);c.fillStyle=p.color;c.fillRect(-p.size/2,-p.size*.35,p.size,p.size*.7);break;
    case 'ring':c.strokeStyle=p.color;c.lineWidth=1.5;c.beginPath();c.arc(p.x,p.y,p.size,0,7);c.stroke();break;
    case 'ink':{const r=p.size*(1+p.t*1.5);const g=c.createRadialGradient(p.x,p.y,0,p.x,p.y,r);g.addColorStop(0,'rgba(184,20,28,.4)');g.addColorStop(1,'rgba(184,20,28,0)');c.fillStyle=g;c.beginPath();c.arc(p.x,p.y,r,0,7);c.fill();break;}
-   case 'glyph':c.fillStyle=p.color;c.font=`${p.size}px ${FONT_B}`;c.textAlign='center';c.textBaseline='middle';c.fillText(p.text,p.x,p.y);break;
+   case 'glyph':c.font=`900 ${p.size}px ${FONT_B}`;c.textAlign='center';c.textBaseline='middle';c.lineJoin='round';c.lineWidth=Math.max(3,p.size*.16);c.strokeStyle='rgba(28,20,30,.85)';c.strokeText(p.text,p.x,p.y);c.fillStyle=p.color;c.fillText(p.text,p.x,p.y);break;
    default:c.fillStyle=p.color;c.beginPath();c.arc(p.x,p.y,p.size,0,7);c.fill();}
   c.restore();}}
 
@@ -453,9 +485,14 @@ function setHp(v){$('#hpFill').style.width=Math.max(0,v)+'%';}
 let shakeT=0,shakeA=0;function shake(a,d){shakeA=a;shakeT=d;}
 function manScale(){return Math.min(W/300,H/540)*1.05;}
 function baseGame(){const m=newMan(W/2,H*.47,manScale());return{m,t:0,done:false,endT:0,fin:false,outro:1.6};}
-function damage(g,amt){if(g.done)return;g.m.hp=Math.max(0,g.m.hp-amt);setHp(g.m.hp);if(g.m.hp<=0){g.done=true;g.endT=0;sfx('ding');buzz([30,40,60]);}}
+function damage(g,amt){if(g.done)return;g.m.hp=Math.max(0,g.m.hp-amt);setHp(g.m.hp);if(g.m.hp<=0){g.done=true;g.endT=0;g.clearT=g.t;sfx('ding');buzz([30,40,60]);}}
 function endCheck(g,dt){if(!g.done)return;g.endT+=dt;if(g.endT>g.outro&&!g.fin){g.fin=true;afterWin();}}
 function headY(m){return m.y-110*m.s;}
+/* juice: short freeze on every hit, and the occasional critical that counts double */
+let freezeT=0,flashT=0;const CRIT_P=.12;
+function hitFx(){freezeT=Math.max(freezeT,.035);}
+function crit(x,y){freezeT=.1;flashT=.14;shake(12,.22);buzz([20,30,50]);sfx('crit');sparks(x,y,26,'#fff1b0');
+  emit({type:'glyph',text:t('crit'),x,y:y-36,vy:-70,life:1.1,size:34,color:'#ffd34d'});return true;}
 function drawGoal(c,txt,hot){c.save();c.textAlign='center';c.font=`900 30px ${FONT_D}`;c.fillStyle=hot?'#e9b949':'#f6f1e4';c.shadowColor='rgba(0,0,0,.6)';c.shadowBlur=8;c.fillText(txt,W/2,122);c.restore();}
 
 /* ---------- 1. darts ---------- */
@@ -470,13 +507,13 @@ function makeDarts(){const g=baseGame(),m=g.m;g.hits=0;m.s*=.8;m.y=H*.32;g.flyin
       const tx=d.x+Math.cos(d.a)*20,ty=d.y+Math.sin(d.a)*20,hit=!g.done&&hitMan(m,tx,ty);
       if(hit){d.dead=true;m.darts.push([hit[0],hit[1],d.a-m.rot]);const head=hit[1]<-44;sfx('thunk');buzz(20);setFace(m,'hit',.6);shake(4,.12);sparks(tx,ty,8,'#fff3c4');
         if(head){emit({type:'glyph',text:t('headshot'),x:tx,y:ty-20,vy:-60,life:.9,size:22,color:'#e9b949'});}
-        say(head?pick(['headshot','face']):'dart',m.x,headY(m),head);g.hits++;damage(g,100/DART_GOAL);}
+        say(head?pick(['headshot','face']):'dart',m.x,headY(m),head);const cr=Math.random()<CRIT_P&&crit(tx,ty);hitFx();g.hits+=cr?2:1;damage(g,(cr?2:1)*100/DART_GOAL);}
       else if(d.y<-60||d.x<-60||d.x>W+60||d.y>H+60){d.dead=true;say('miss',m.x,headY(m));}}
     g.flying=g.flying.filter(d=>!d.dead);endCheck(g,dt);};
   g.draw=c=>{drawBg(c,'#1b1626','#0d0b13');spot(c,W/2,H*.32,W*.7,.12);
     c.strokeStyle='rgba(246,241,228,.06)';c.lineWidth=1;for(let i=1;i<6;i++){c.beginPath();c.arc(W/2,H*.32,i*50,0,7);c.stroke();}
     drawMan(c,m);for(const d of g.flying)drawDart(c,d.x,d.y,d.a,1.3);
-    drawGoal(c,`${S.lang==='zh'?'命中':'Hits'} ${g.hits} / ${DART_GOAL}`,g.hits>=7);
+    drawGoal(c,`${S.lang==='zh'?'命中':'Hits'} ${Math.min(g.hits,DART_GOAL)} / ${DART_GOAL}`,g.hits>=7);
     if(g.cool<=0&&!g.done){const bob=Math.sin(g.t*4)*4;drawDart(c,W/2,H-110+bob,-Math.PI/2,1.5);c.fillStyle='rgba(246,241,228,.35)';c.font=`700 13px ${FONT_B}`;c.textAlign='center';c.fillText('↑',W/2,H-170+bob);}};
   g.up=p=>{if(g.done||g.cool>0)return;const[vx,vy]=velOf(p);if(vy>-250)return;let sp=Math.hypot(vx,vy),k=clamp(sp,900,2100)/sp;
     g.flying.push({x:p.x,y:Math.max(p.y,H*.55),vx:vx*k,vy:vy*k,a:Math.atan2(vy,vx)});g.cool=.28;sfx('whoosh');};
@@ -492,7 +529,7 @@ const SLIP_GOAL=100,SLIP_TIME=30;
 function medalFor(n){return n>=SLIP_GOAL?'gold':n>=70?'silver':n>=40?'bronze':null;}
 function makeSlipper(){const g=baseGame(),m=g.m;m.vx=rand(-1,1)>0?120:-120;m.vy=rand(-60,60);g.slaps=[];g.combo=0;g.lastHit=0;g.chantI=0;g.chantC=0;g.comboPop=0;g.hits=0;g.left=SLIP_TIME;g.started=false;
   $('#chant').hidden=false;renderChant(g);
-  const finish=()=>{S.slipHits=g.hits;S.medal=medalFor(g.hits);g.m.hp=0;setHp(0);g.done=true;g.endT=0;sfx('ding');buzz([30,40,60]);};
+  const finish=()=>{S.slipHits=g.hits;S.slipSecs=SLIP_TIME-g.left;g.clearT=g.t;S.medal=medalFor(g.hits);g.m.hp=0;setHp(0);g.done=true;g.endT=0;sfx('ding');buzz([30,40,60]);};
   g.update=dt=>{tickFace(m,dt);
     if(g.started&&!g.done){g.left-=dt;if(g.left<=0){g.left=0;finish();}}
     if(!g.done){// runs around; faster the more it gets hit
@@ -515,7 +552,7 @@ function makeSlipper(){const g=baseGame(),m=g.m;m.vx=rand(-1,1)>0?120:-120;m.vy=
     sfx('slap');buzz(12);if(m.bruises.length<40)m.bruises.push([hit[0],hit[1],10+Math.random()*8]);m.sy=.84;m.sx=1.1;setFace(m,'hit',.35);shake(3,.08);
     g.combo++;g.lastHit=performance.now();g.comboPop=1;sparks(p.x,p.y,5,'#ffffff');if(hit[1]<-42)say('face',m.x,headY(m),performance.now()-lastSay>500);else say('hit',m.x,headY(m));
     g.chantC+=2;const line=CHANT[g.chantI%CHANT.length];if(g.chantC>line.length+3){g.chantI++;g.chantC=0;}renderChant(g);
-    g.started=true;g.hits++;m.hp=100*(1-g.hits/SLIP_GOAL);setHp(m.hp);if(g.hits>=SLIP_GOAL)finish();};
+    g.started=true;const cr=Math.random()<CRIT_P*.5&&crit(p.x,p.y);hitFx();g.hits=Math.min(SLIP_GOAL,g.hits+(cr?2:1));m.hp=100*(1-g.hits/SLIP_GOAL);setHp(m.hp);if(g.hits>=SLIP_GOAL)finish();};
   return g;}
 
 /* ---------- 3. burn ---------- */
@@ -571,7 +608,8 @@ function drawHammer(c,x,y,rot,k){c.save();c.translate(x,y);c.rotate(rot);c.scale
 const NAIL_GOAL=10;
 function makeNail(){const g=baseGame(),m=g.m;m.s*=.82;g.cxm=W/2;g.hold=null;g.hams=[];g.curA=1;g.ph=0;
   const strike=(x,y)=>{g.hams.push({x,y,t:0});const hit=!g.done&&hitMan(m,x,y);
-    if(hit){m.nails.push(hit);sfx('clank');sparks(x,y,14,'#ffe7a8');shake(6,.14);buzz(35);setFace(m,'hit',.7);say('nail',m.x,headY(m));damage(g,100/NAIL_GOAL);}
+    if(hit){m.nails.push(hit);sfx('clank');sparks(x,y,14,'#ffe7a8');shake(6,.14);buzz(35);setFace(m,'hit',.7);say('nail',m.x,headY(m));hitFx();
+      const cr=m.nails.length<NAIL_GOAL&&Math.random()<CRIT_P&&crit(x,y);if(cr)m.nails.push([hit[0]+rand(-16,16),hit[1]+rand(-16,16)]);damage(g,(cr?2:1)*100/NAIL_GOAL);}
     else{sfx('thunk');if(Math.random()<.4)say('taunt',m.x,headY(m));}};
   g.update=dt=>{tickFace(m,dt,g.hold?'scared':'smug');
     if(!g.done){const held=g.hold&&performance.now()-g.hold.t0>200;const target=held?.06:Math.max(.3,1-m.nails.length*.07);g.curA+=(target-g.curA)*Math.min(1,dt*6);
@@ -579,7 +617,7 @@ function makeNail(){const g=baseGame(),m=g.m;m.s*=.82;g.cxm=W/2;g.hold=null;g.ha
       if(held&&m.faceT<=0)m.face='scared';}
     else{m.face='cry';if(!g.stamped&&g.endT>.25){g.stamped=true;sfx('stamp');shake(8,.2);buzz(50);}}
     for(const h of g.hams)h.t+=dt;g.hams=g.hams.filter(h=>h.t<.32);endCheck(g,dt);};
-  g.draw=c=>{drawTree(c,g.t);drawMan(c,m);drawGoal(c,`${S.lang==='zh'?'釘子':'Nails'} ${m.nails.length} / ${NAIL_GOAL}`,m.nails.length>=7);
+  g.draw=c=>{drawTree(c,g.t);drawMan(c,m);drawGoal(c,`${S.lang==='zh'?'釘子':'Nails'} ${Math.min(m.nails.length,NAIL_GOAL)} / ${NAIL_GOAL}`,m.nails.length>=7);
     for(const h of g.hams){const k=Math.min(1,h.t/.07);drawHammer(c,h.x,h.y,-1.1*(1-k),m.s*.9);}
     if(g.done&&g.endT>.25){const k=Math.min(1,(g.endT-.25)/.15),sc=2-k;c.save();c.translate(m.x,m.y);c.rotate(-.15);c.scale(sc*m.s,sc*m.s);c.globalAlpha=k*.92;
       c.fillStyle='#c81e1e';rr(c,-40,-40,80,80,8);c.fill();c.strokeStyle='#fff3e6';c.lineWidth=3;rr(c,-33,-33,66,66,5);c.stroke();
@@ -713,7 +751,7 @@ const SHAKE_GOAL=20;
 function makeShake(){const g=baseGame(),m=g.m;g.hits=0;const jw=Math.min(W*.66,270),jh=Math.min(H*.5,380);
   const J={x:W/2,y:H*.53,w:jw,h:jh,vx:0,vy:0,hx:W/2,hy:H*.53};g.J=J;m.s=g.m.s*.42;m.lx=0;m.ly=0;m.vx=0;m.vy=0;m.vr=0;g.drag=null;g.cool=0;
   try{if(typeof DeviceMotionEvent!=='undefined'&&DeviceMotionEvent.requestPermission)DeviceMotionEvent.requestPermission().catch(()=>{});}catch(e){}
-  const impact=v=>{if(v<260||g.cool>0||g.done)return;g.cool=.12;g.hits++;damage(g,100/SHAKE_GOAL);sfx('clink',Math.min(1,v/1200));buzz(10);setFace(m,'dizzy',.8);say('shake',J.x,J.y-J.h/2-10);
+  const impact=v=>{if(v<260||g.cool>0||g.done)return;g.cool=.12;const cr=Math.random()<CRIT_P&&crit(m.x,m.y);g.hits+=cr?2:1;damage(g,(cr?2:1)*100/SHAKE_GOAL);sfx('clink',Math.min(1,v/1200));buzz(10);setFace(m,'dizzy',.8);say('shake',J.x,J.y-J.h/2-10);
     for(let i=0;i<3;i++)emit({type:'glyph',text:'✦',x:m.x+rand(-20,20),y:m.y-60*m.s,vx:rand(-60,60),vy:rand(-90,-30),life:.7,size:14,color:'#e9b949'});};
   g.update=dt=>{const px=J.x,py=J.y,pvx=J.vx,pvy=J.vy;g.cool-=dt;
     if(g.drag&&!g.done){const k=Math.min(1,dt*25);J.x+=(g.drag.x+g.drag.dx-J.x)*k;J.y+=(g.drag.y+g.drag.dy-J.y)*k;J.vx+=((J.x-px)/dt-J.vx)*.5;J.vy+=((J.y-py)/dt-J.vy)*.5;}
@@ -730,7 +768,7 @@ function makeShake(){const g=baseGame(),m=g.m;g.hits=0;const jw=Math.min(W*.66,2
     if(g.done){m.face='dizzy';g.drag=null;if(Math.random()<.3)emit({type:'glyph',text:'✦',x:m.x+Math.cos(g.t*6)*30,y:m.y-80*m.s+Math.sin(g.t*6)*8,life:.5,size:13,color:'#e9b949'});}
     tickFace(m,dt);endCheck(g,dt);};
   g.draw=c=>{drawBg(c,'#17141f','#0b0a10');spot(c,W/2,H*.5,W*.8,.12);const x=J.x,y=J.y,w=J.w,h=J.h;
-    drawGoal(c,`${S.lang==='zh'?'撞擊':'Bonks'} ${g.hits} / ${SHAKE_GOAL}`,g.hits>=15);
+    drawGoal(c,`${S.lang==='zh'?'撞擊':'Bonks'} ${Math.min(g.hits,SHAKE_GOAL)} / ${SHAKE_GOAL}`,g.hits>=15);
     c.fillStyle='rgba(0,0,0,.3)';c.beginPath();c.ellipse(J.hx,J.hy+h/2+12,w*.45,12,0,0,7);c.fill();
     c.fillStyle='rgba(200,225,240,.06)';rr(c,x-w/2,y-h/2+20,w,h-20,28);c.fill();
     drawMan(c,m);
@@ -816,7 +854,10 @@ async function makeTalisman(name,verb,fortune,blessed){
   for(let i=0;i<70;i++){x.fillStyle=`rgba(246,241,228,${Math.random()*.25})`;x.beginPath();x.arc(Math.random()*1080,Math.random()*1500,Math.random()*3+.5,0,7);x.fill();}
   const pw=680,ph=1300,px=200,py=50,mid=px+pw/2,RED='#b3121c',INK='#1d1410';
   /* aged paper */
-  x.save();x.shadowColor='rgba(0,0,0,.6)';x.shadowBlur=50;x.shadowOffsetY=18;x.fillStyle='#eec44a';x.fillRect(px,py,pw,ph);x.restore();
+  const GOLD=allCleared();x.save();x.shadowColor=GOLD?'rgba(255,200,80,.55)':'rgba(0,0,0,.6)';x.shadowBlur=50;x.shadowOffsetY=18;
+  if(GOLD){const gg=x.createLinearGradient(px,py,px+pw,py+ph);gg.addColorStop(0,'#f9e08b');gg.addColorStop(.35,'#e2b13c');gg.addColorStop(.55,'#fff0b0');gg.addColorStop(.75,'#d9a52e');gg.addColorStop(1,'#f5d26a');x.fillStyle=gg;}else x.fillStyle='#eec44a';
+  x.fillRect(px,py,pw,ph);x.restore();
+  if(GOLD){for(let i=0;i<40;i++){const sx=px+R()*pw,sy=py+R()*ph,r=2+R()*5;x.fillStyle=`rgba(255,255,240,${.4+R()*.5})`;x.beginPath();x.moveTo(sx,sy-r*2);x.lineTo(sx+r*.5,sy);x.lineTo(sx,sy+r*2);x.lineTo(sx-r*.5,sy);x.closePath();x.fill();}}
   x.save();x.beginPath();x.rect(px,py,pw,ph);x.clip();
   for(let i=0;i<4200;i++){x.fillStyle=R()<.5?`rgba(140,90,15,${R()*.13})`:`rgba(255,238,170,${R()*.2})`;x.fillRect(px+R()*pw,py+R()*ph,R()*3+1,R()*2+.5);}
   x.strokeStyle='rgba(140,90,15,.13)';x.lineWidth=1;for(let i=0;i<90;i++){const sx=px+R()*pw,sy=py+R()*ph;x.beginPath();x.moveTo(sx,sy);x.quadraticCurveTo(sx+(R()-.5)*40,sy+(R()-.5)*10,sx+(R()-.5)*80,sy+(R()-.5)*16);x.stroke();}
@@ -901,7 +942,24 @@ async function makeTalisman(name,verb,fortune,blessed){
 /* ---------- flow ---------- */
 const MAKERS={darts:makeDarts,slipper:makeSlipper,burn:makeBurn,nail:makeNail,tear:makeTear,crumple:makeCrumple,water:makeWater,shake:makeShake};
 let G=null,screen='intro';const ROUND_MAX=60;
-function show(id){screen=id;['intro','nameScr','modesScr','result'].forEach(s=>$('#'+s).hidden=s!==id);$('#hud').hidden=id!=='play';$('#soundBtn').hidden=id==='intro';}
+const GAME_URL='https://mochachen1225-create.github.io/hitting/';
+// clear-time thresholds in seconds for S / A / B; anything slower (or a timeout) is C
+const GRADE_T={darts:[15,25,40],burn:[12,20,35],nail:[10,18,30],tear:[12,20,35],crumple:[15,25,40],water:[12,20,35],shake:[8,15,25]};
+const GRADE_RANK={S:4,A:3,B:2,C:1};
+function gradeOf(mode,secs,hits,timeout){if(mode==='slipper')return hits>=SLIP_GOAL?(secs<=22?'S':'A'):hits>=70?'B':'C';
+  if(timeout)return 'C';const g=GRADE_T[mode];return secs<=g[0]?'S':secs<=g[1]?'A':secs<=g[2]?'B':'C';}
+function better(a,b){if(!b)return true;if(GRADE_RANK[a.grade]!==GRADE_RANK[b.grade])return GRADE_RANK[a.grade]>GRADE_RANK[b.grade];
+  return a.mode==='slipper'&&a.hits!==b.hits?a.hits>b.hits:a.secs<b.secs;}
+let BEST=store.get('best',{});if(!BEST||typeof BEST!=='object')BEST={};
+const clearedCount=()=>MODE_IDS.filter(id=>BEST[id]).length;
+const allCleared=()=>clearedCount()===MODE_IDS.length;
+function recordScore(g){const slip=S.mode==='slipper',secs=slip?(S.slipSecs||SLIP_TIME):(g.clearT!=null?g.clearT:g.t);
+  const sc={mode:S.mode,secs:Math.round(secs*10)/10,hits:S.slipHits||0,timeout:!!g.timeout};sc.grade=gradeOf(S.mode,secs,sc.hits,sc.timeout);
+  const prev=BEST[S.mode],wasAll=allCleared();sc.prev=prev;sc.isNew=better(sc,prev);
+  if(sc.isNew){BEST[S.mode]={mode:sc.mode,grade:sc.grade,secs:sc.secs,hits:sc.hits};store.set('best',BEST);}
+  sc.unlockGold=!wasAll&&allCleared();S.score=sc;}
+const scoreVal=b=>b.mode==='slipper'?T[S.lang].hitsVal(b.hits):T[S.lang].secs(b.secs);
+function show(id){screen=id;if(id==='modesScr')renderModes();['intro','nameScr','modesScr','result'].forEach(s=>$('#'+s).hidden=s!==id);$('#hud').hidden=id!=='play';$('#soundBtn').hidden=id==='intro';}
 function showHint(txt){const h=$('#hint');h.textContent=txt;h.style.animation='none';void h.offsetWidth;h.style.animation='';}
 function applyLang(){document.documentElement.lang=S.lang==='zh'?'zh-Hant':'en';
   document.querySelectorAll('[data-i18n]').forEach(el=>{const v=t(el.dataset.i18n);if(typeof v==='string')el.textContent=v;});
@@ -909,10 +967,13 @@ function applyLang(){document.documentElement.lang=S.lang==='zh'?'zh-Hant':'en';
 function renderModes(){const grid=$('#modeGrid');grid.textContent='';
   for(const id of MODE_IDS){const[nm,ds]=t('modes')[id];const b=document.createElement('button');b.type='button';b.className='card';b.dataset.mode=id;
     const s=document.createElement('span');s.className='seal';s.textContent=GLYPH[id];const tx=document.createElement('span');const bb=document.createElement('b');bb.textContent=nm;const sm=document.createElement('small');sm.textContent=ds;
-    tx.append(bb,sm);b.append(s,tx);b.addEventListener('click',()=>{audioInit();startMode(id);});grid.append(b);}}
-function startMode(id){$('.hp').hidden=false;S.mode=id;S.medal=null;S.slipHits=0;P.length=0;bubbles.length=0;ptrs.clear();$('#chant').hidden=true;$('#catSkip').hidden=true;
+    tx.append(bb,sm);b.append(s,tx);
+    const bd=document.createElement('span'),best=BEST[id];bd.className='badge'+(best?' g'+best.grade:' none');bd.textContent=best?best.grade:t('notYet');if(best)bd.title=T[S.lang].bestLine(best.grade,scoreVal(best));b.append(bd);
+    b.addEventListener('click',()=>{audioInit();startMode(id);});grid.append(b);}
+  const n=clearedCount();$('#dexLine').textContent=T[S.lang].dex(n)+'　'+(n===MODE_IDS.length?t('dexGold'):t('dexHint'));$('#dexLine').classList.toggle('gold',n===MODE_IDS.length);}
+function startMode(id){$('.hp').hidden=false;S.mode=id;S.medal=null;S.slipHits=0;S.slipSecs=0;S.score=null;P.length=0;bubbles.length=0;ptrs.clear();$('#chant').hidden=true;$('#catSkip').hidden=true;
   G=MAKERS[id]();$('#hudTitle').textContent=t('modes')[id][0];$('#hudTime').textContent='';setHp(100);showHint(t('hints')[id]);show('play');}
-function afterWin(){startClear(()=>{if(Math.random()<.35)startCat();else showResult(false);});}
+function afterWin(){recordScore(G);startClear(()=>{if(Math.random()<.35)startCat();else showResult(false);});}
 /* the refreshing finale: night turns to sunrise */
 function startClear(next){P.length=0;bubbles.length=0;ptrs.clear();$('#chant').hidden=true;$('#hudTime').textContent='';$('#hudTitle').textContent='';setHp(0);
   const g={t:0,fin:false,sub:pick(t('clearSubs'))};sfx('whoosh');setTimeout(()=>sfx('ding'),250);
@@ -937,12 +998,18 @@ async function showResult(blessed){G=null;P.length=0;bubbles.length=0;$('#catSki
   const md=$('#resMedal');md.hidden=S.mode!=='slipper';if(S.mode==='slipper')md.textContent=S.medal?'🏅 '+F.medalLine(F.medals[S.medal],S.slipHits):F.medalTry(S.slipHits);
   const fe=$('#resFortune');fe.textContent='';const em=document.createElement('em');em.textContent=S.fortune[0];fe.append(F.fortune+'：',em,'　'+S.fortune[1]);
   $('#resBless').hidden=!blessed;$('#resBless').textContent=F.catBless;
+  const sc=S.score;$('#resScore').hidden=!sc;
+  if(sc){const ge=$('#resGrade');ge.textContent=sc.grade;ge.className='grade g'+sc.grade;ge.style.animation='none';void ge.offsetWidth;ge.style.animation='';
+    $('#resTime').textContent=sc.timeout?F.timeUp:scoreVal(sc);$('#resNew').textContent=sc.isNew?(sc.prev?F.newRec:F.firstClear):'';
+    const b=BEST[S.mode];$('#resBest').textContent=b&&!(sc.isNew&&!sc.prev)?F.bestLine(b.grade,scoreVal(b)):'';setTimeout(()=>sfx('stamp'),350);}
+  $('#resGold').hidden=!(sc&&sc.unlockGold);$('#resGold').textContent=F.goldUnlocked;if(sc&&sc.unlockGold)setTimeout(()=>sfx('ding'),700);
   $('#lineBtn').href='https://line.me/R/share?text='+encodeURIComponent(shareText());
   $('#talImg').removeAttribute('src');$('#talImg').alt=S.headline;show('result');
   for(let i=0;i<50;i++){const a=rand(-Math.PI*.9,-Math.PI*.1),v=rand(200,520);emit({type:'paper',x:W/2,y:H*.35,vx:Math.cos(a)*v,vy:Math.sin(a)*v,g:420,life:rand(1.4,2.4),size:rand(6,11),color:pick(['#ecc24c','#d8402e','#f6f1e4']),vr:rand(-9,9),drag:.8});}
   const r=await makeTalisman(S.name,verb,S.fortune,blessed);$('#talImg').src=r.url;S.talBlob=r.blob;}
 let DL=null;try{if(window.claude&&window.claude.use)window.claude.use('downloads').then(d=>{DL=d}).catch(()=>{});}catch(e){}
-function shareText(){const F=T[S.lang];let s=F.shareMsg(S.headline,S.name,F.verbs[S.mode],S.fortune[0]+' '+S.fortune[1]);if(S.medal)s+='\n🏅 '+F.medalLine(F.medals[S.medal],S.slipHits);return s;}
+function scoreLine(){const F=T[S.lang],sc=S.score;if(!sc)return '';return sc.mode==='slipper'?F.scoreSlip(sc.hits,sc.grade):F.scoreTime(sc.secs,sc.grade);}
+function shareText(){const F=T[S.lang];let s=F.shareMsg(S.headline,S.name,F.verbs[S.mode],S.fortune[0]+' '+S.fortune[1],scoreLine());if(S.medal)s+='\n🏅 '+F.medalLine(F.medals[S.medal],S.slipHits);return s+'\n'+F.challenge+' '+GAME_URL;}
 async function doShare(){const blob=S.talBlob;if(!blob)return;const msg=shareText();
   try{const file=new File([blob],'xiaoren-tuisan.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],text:msg});return;}}
   catch(e){if(e&&e.name==='AbortError')return;}
@@ -975,13 +1042,15 @@ applyLang();
 let last=performance.now();
 function loop(now){const dt=Math.min(.05,(now-last)/1000)||.016;last=now;cx.setTransform(DPR,0,0,DPR,0,0);cx.save();
   if(shakeT>0){shakeT-=dt;cx.translate((Math.random()-.5)*shakeA,(Math.random()-.5)*shakeA);}
-  if(G){G.t+=dt;
+  if(G&&freezeT>0)freezeT-=dt;
+  else if(G){G.t+=dt;
     // every round has an end: 60 s cap (the slipper round runs its own 30 s clock)
-    if(G.m&&S.mode!=='slipper'){const left=Math.max(0,ROUND_MAX-G.t),el=$('#hudTime');if(!G.done&&left<=0)damage(G,999);
+    if(G.m&&S.mode!=='slipper'){const left=Math.max(0,ROUND_MAX-G.t),el=$('#hudTime');if(!G.done&&left<=0){G.timeout=true;damage(G,999);}
       const txt=G.done?'':`${Math.ceil(left)} ${t('sec')}`;if(el.textContent!==txt)el.textContent=txt;el.classList.toggle('low',left<10);}
     G.update(dt);}
   if(G)G.draw(cx);else drawAmbient(cx,dt);
-  updParticles(dt);drawParticles(cx);drawBubbles(cx,dt);cx.restore();
+  updParticles(dt);drawParticles(cx);drawBubbles(cx,dt);
+  if(flashT>0){flashT-=dt;cx.fillStyle=`rgba(255,250,235,${Math.max(0,flashT)*3})`;cx.fillRect(-30,-30,W+60,H+60);}cx.restore();
   if(screen==='nameScr')drawPreview(now);requestAnimationFrame(loop);}
 requestAnimationFrame(loop);
 </script>

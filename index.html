@@ -126,6 +126,15 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .bless{color:var(--talisman);font-size:14px;margin:0}
 .share-col{display:flex;flex-direction:column;gap:10px;width:min(100%,360px)}
 .share-col .btn{width:100%}
+/* achievements */
+#achToast{position:fixed;left:50%;top:calc(64px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:9;padding:10px 18px;border-radius:99px;background:linear-gradient(135deg,#ffe08a,#e9b949);color:#3a2408;font-weight:700;font-size:14px;width:max-content;max-width:90vw;box-shadow:0 8px 30px rgba(0,0,0,.45);animation:achIn 2.4s ease both;pointer-events:none}
+@keyframes achIn{0%{opacity:0;transform:translate(-50%,-12px)}10%,85%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-8px)}}
+.ach-rewards{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:min(92vw,520px)}
+.ach-reward{font-size:12px;padding:3px 10px;border-radius:99px;border:1px solid rgba(169,163,191,.4);color:var(--mist)}
+.ach-reward.on{border-color:var(--talisman);color:var(--talisman)}
+.ach-card{display:flex;gap:12px;align-items:center;text-align:left;padding:10px 14px;border-radius:14px;border:1px solid rgba(246,241,228,.14);background:rgba(28,25,41,.78)}
+.ach-card>div{min-width:0}.ach-card b{display:block;font-size:15px}.ach-card small{display:block;color:var(--mist);font-size:12px;margin-top:2px}
+.ach-card.locked{opacity:.5}.ach-icon{font-size:22px;flex:none}
 /* folklore codex */
 .disclaimer{margin:22px 0 0;color:rgba(169,163,191,.75);font-size:11px;line-height:1.6;max-width:min(92vw,420px);animation:rise 1.4s 2s ease-out both}
 .codex{display:flex;flex-direction:column;gap:10px;width:min(100%,520px)}
@@ -209,9 +218,17 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
   <h2 data-i18n="modesTitle"></h2>
   <button id="dailyBtn" class="daily" type="button"><span class="seal">今</span><span class="daily-txt"><b id="dailyTitle"></b><small id="dailySub"></small></span><span class="daily-go" data-i18n="dailyGo"></span></button>
   <p class="dex" id="dexLine"></p>
-  <button id="codexBtn" class="linkbtn" type="button" data-i18n="codexOpen"></button>
+  <div class="row"><button id="codexBtn" class="linkbtn" type="button" data-i18n="codexOpen"></button><button id="achBtn" class="linkbtn" type="button"></button></div>
   <div id="modeGrid" class="grid"></div>
   <button id="randomBtn" class="btn primary" type="button" data-i18n="random"></button>
+</section>
+
+<section id="achScr" class="screen top" hidden>
+  <h2 data-i18n="achTitle"></h2>
+  <p class="dex" id="achCount"></p>
+  <div class="ach-rewards" id="achRewards"></div>
+  <div id="achList" class="codex"></div>
+  <button id="achBack" class="btn" type="button" data-i18n="back"></button>
 </section>
 
 <section id="codexScr" class="screen top" hidden>
@@ -258,6 +275,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 </div>
 <button id="soundBtn" class="iconbtn" type="button" hidden></button>
 <div id="toast" hidden></div>
+<div id="achToast" hidden></div>
 
 <script>
 'use strict';
@@ -287,7 +305,7 @@ const T={
   shareMsg:(h,n,v,f,sc)=>`${h}\n我把「${n}」${v}了（${sc}）\n今日運勢：${f}`,
   scoreTime:(s,g)=>`${s} 秒・評級 ${g}`,scoreSlip:(h,g)=>`30 秒打了 ${h} 下・評級 ${g}`,challenge:'你敢來挑戰嗎？👉',
   secs:s=>`${s} 秒`,hitsVal:h=>`${h} 下`,newRec:'新紀錄！',firstClear:'首次退散！',bestLine:(g,v)=>`最佳紀錄：${g}・${v}`,timeUp:'時間到，小人自己嚇跑了',
-  crit:'暴擊！×2',back:'返回',
+  crit:'暴擊！×2',back:'返回',achTitle:'成就',achUnlocked:'成就解鎖',achCount:(n,m)=>`已解鎖 ${n} / ${m}`,achReward:(n,r)=>`${n} 個：${r}`,rw_goldText:'符咒金色字',rw_glow:'朱砂光框',rw_master:'退散大師印',
   disclaimer:'純屬娛樂：習俗介紹都是傳說與遊戲改編，不是真實歷史或宗教建議，也沒有任何效力。',
   codexOpen:'📜 民俗圖鑑',codexTitle:'民俗圖鑑',codexLocked:'？？？　玩過就會解鎖',codexCount:(n,m)=>`已解鎖 ${n} / ${m}`,codexNew:x=>`📜 新圖鑑：${x}`,
   poeTitle:'擲筊',poeHint:'點一下或往上滑擲筊。連續三個聖筊，運勢升級！',poeTap:'點一下擲筊',poeAsk:n=>`請問神明：「${n}」退散了嗎？`,poeLeft:n=>`還可以擲 ${n} 次`,
@@ -316,7 +334,7 @@ const T={
   shareMsg:(h,n,v,f,sc)=>`${h} 小人退散!\nI just ${v} "${n}" (${sc}).\nToday's fortune: ${f}`,
   scoreTime:(s,g)=>`${s}s, grade ${g}`,scoreSlip:(h,g)=>`${h} hits in 30s, grade ${g}`,challenge:'Think you can beat me? 👉',
   secs:s=>`${s}s`,hitsVal:h=>`${h} hits`,newRec:'New record!',firstClear:'First clear!',bestLine:(g,v)=>`Best: ${g} · ${v}`,timeUp:'Time up. It ran off scared',
-  crit:'CRIT! ×2',back:'Back',
+  crit:'CRIT! ×2',back:'Back',achTitle:'Achievements',achUnlocked:'Achievement',achCount:(n,m)=>`Unlocked ${n} / ${m}`,achReward:(n,r)=>`${n}: ${r}`,rw_goldText:'gold talisman text',rw_glow:'cinnabar glow frame',rw_master:'Master Banisher seal',
   disclaimer:'Just for fun: these folklore notes are playful retellings, not history or religious advice, and nothing here has any real effect.',
   codexOpen:'📜 Folklore',codexTitle:'Folklore',codexLocked:'??? Play to unlock',codexCount:(n,m)=>`Unlocked ${n} / ${m}`,codexNew:x=>`📜 New folklore: ${x}`,
   poeTitle:'Moon Blocks',poeHint:'Tap or swipe up to toss. Three holy cups in a row upgrades your fortune!',poeTap:'Tap to toss',poeAsk:n=>`Ask the gods: is "${n}" gone?`,poeLeft:n=>`${n} tosses left`,
@@ -540,7 +558,7 @@ function headY(m){return m.y-110*m.s;}
 /* juice: short freeze on every hit, and the occasional critical that counts double */
 let freezeT=0,flashT=0;const CRIT_P=.12;const critP=()=>CRIT_P*(S.daily&&S.mod==='crit'?3:1);
 function hitFx(){freezeT=Math.max(freezeT,.035);}
-function crit(x,y){freezeT=.1;flashT=.14;shake(12,.22);buzz([20,30,50]);sfx('crit');sparks(x,y,26,'#fff1b0');
+function crit(x,y){ach('crit');if(bumpStat('crit')>=20)ach('crit20');freezeT=.1;flashT=.14;shake(12,.22);buzz([20,30,50]);sfx('crit');sparks(x,y,26,'#fff1b0');
   emit({type:'glyph',text:t('crit'),x,y:y-36,vy:-70,life:1.1,size:34,color:'#ffd34d'});return true;}
 function drawGoal(c,txt,hot){c.save();c.textAlign='center';c.font=`900 30px ${FONT_D}`;c.fillStyle=hot?'#e9b949':'#f6f1e4';c.shadowColor='rgba(0,0,0,.6)';c.shadowBlur=8;c.fillText(txt,W/2,122);c.restore();}
 
@@ -554,7 +572,7 @@ function makeDarts(){const g=baseGame(),m=g.m;g.hits=0;m.s*=.8;m.y=H*.32;g.flyin
     for(const d of g.flying){if(!d.chk&&!g.done&&Math.abs(d.y-m.y)<200){d.chk=true;if(Math.random()<.3){g.ph+=Math.PI*.35*(Math.random()<.5?-1:1);say('taunt',m.x,headY(m),true);}}
       d.vy+=500*dt;d.x+=d.vx*dt;d.y+=d.vy*dt;d.a=Math.atan2(d.vy,d.vx);
       const tx=d.x+Math.cos(d.a)*20,ty=d.y+Math.sin(d.a)*20,hit=!g.done&&hitMan(m,tx,ty);
-      if(hit){d.dead=true;m.darts.push([hit[0],hit[1],d.a-m.rot]);const head=hit[1]<-44;sfx('thunk');buzz(20);setFace(m,'hit',.6);shake(4,.12);sparks(tx,ty,8,'#fff3c4');
+      if(hit){d.dead=true;m.darts.push([hit[0],hit[1],d.a-m.rot]);const head=hit[1]<-44;if(head){g.heads=(g.heads||0)+1;if(g.heads>=3)ach('sharp');if(bumpStat('face')>=20)ach('face20');}sfx('thunk');buzz(20);setFace(m,'hit',.6);shake(4,.12);sparks(tx,ty,8,'#fff3c4');
         if(head){emit({type:'glyph',text:t('headshot'),x:tx,y:ty-20,vy:-60,life:.9,size:22,color:'#e9b949'});}
         say(head?pick(['headshot','face']):'dart',m.x,headY(m),head);const cr=Math.random()<critP()&&crit(tx,ty);hitFx();g.hits+=cr?2:1;damage(g,(cr?2:1)*100/DART_GOAL);}
       else if(d.y<-60||d.x<-60||d.x>W+60||d.y>H+60){d.dead=true;say('miss',m.x,headY(m));}}
@@ -599,9 +617,9 @@ function makeSlipper(){const g=baseGame(),m=g.m;m.vx=rand(-1,1)>0?120:-120;m.vy=
   g.down=p=>{if(g.done)return;g.slaps.push({x:p.x,y:p.y,t:0});const hit=hitMan(m,p.x,p.y,24);
     if(!hit){sfx('whoosh');if(Math.random()<.5)say('taunt',m.x,headY(m));return;}m.vx+=(m.x-p.x)*3;m.vy+=(m.y-p.y)*3;
     sfx('slap');buzz(12);if(m.bruises.length<40)m.bruises.push([hit[0],hit[1],10+Math.random()*8]);m.sy=.84;m.sx=1.1;setFace(m,'hit',.35);shake(3,.08);
-    g.combo++;g.lastHit=performance.now();g.comboPop=1;sparks(p.x,p.y,5,'#ffffff');if(hit[1]<-42)say('face',m.x,headY(m),performance.now()-lastSay>500);else say('hit',m.x,headY(m));
+    g.combo++;g.lastHit=performance.now();g.comboPop=1;if(g.combo>=30)ach('combo30');if(hit[1]<-42&&bumpStat('face')>=20)ach('face20');sparks(p.x,p.y,5,'#ffffff');if(hit[1]<-42)say('face',m.x,headY(m),performance.now()-lastSay>500);else say('hit',m.x,headY(m));
     g.chantC+=2;const line=CHANT[g.chantI%CHANT.length];if(g.chantC>line.length+3){g.chantI++;g.chantC=0;}renderChant(g);
-    g.started=true;const cr=Math.random()<critP()*.5&&crit(p.x,p.y);hitFx();g.hits=Math.min(SLIP_GOAL,g.hits+(cr?2:1));m.hp=100*(1-g.hits/SLIP_GOAL);setHp(m.hp);if(g.hits>=SLIP_GOAL)finish();};
+    g.started=true;const cr=Math.random()<critP()*.5&&crit(p.x,p.y);hitFx();g.hits=Math.min(SLIP_GOAL,g.hits+(cr?2:1));m.hp=100*(1-g.hits/SLIP_GOAL);setHp(m.hp);if(g.hits>=SLIP_GOAL){ach('gold');finish();}};
   return g;}
 
 /* ---------- 3. burn ---------- */
@@ -685,14 +703,14 @@ const SHRED_GOAL=60;
 function makeTear(){const g=baseGame(),m=g.m;g.shreds=1;const R=[[-80,-100],[80,-100],[80,106],[-80,106]];g.pieces=[{poly:R,jag:jagged(R,1),ox:0,oy:0,rot:0,vx:0,vy:0,vr:0}];g.stroke=null;g.trail=[];g.pinch=null;g.cuts=0;
   const local=(pc,x,y)=>{const dx=x-(m.x+pc.ox),dy=y-(m.y+pc.oy),c=Math.cos(-pc.rot),s=Math.sin(-pc.rot);return[(dx*c-dy*s)/m.s,(dx*s+dy*c)/m.s];};
   const tryCut=(ax,ay,bx,by)=>{if(g.done)return false;let did=false;const next=[];
-    for(const pc of g.pieces){const A=local(pc,ax,ay),B=local(pc,bx,by);const nx=-(B[1]-A[1]),ny=B[0]-A[0],k=-(nx*A[0]+ny*A[1]);
+    let splits=0;for(const pc of g.pieces){const A=local(pc,ax,ay),B=local(pc,bx,by);const nx=-(B[1]-A[1]),ny=B[0]-A[0],k=-(nx*A[0]+ny*A[1]);
       let crosses=false;for(let i=0;i<=40;i++){const q=i/40,x=A[0]+(B[0]-A[0])*q,y=A[1]+(B[1]-A[1])*q;if(inPoly(x,y,pc.poly)&&inMan(x,y)){crosses=true;break;}}
       const P1=crosses?clipHalf(pc.poly,nx,ny,k,1):[],P2=crosses?clipHalf(pc.poly,nx,ny,k,-1):[];
       if(!crosses||P1.length<3||P2.length<3||area(P1)<40||area(P2)<40){next.push(pc);continue;}
-      did=true;const L=Math.hypot(nx,ny)||1,c=Math.cos(pc.rot),s=Math.sin(pc.rot),wx=(nx*c-ny*s)/L,wy=(nx*s+ny*c)/L;
+      did=true;splits++;const L=Math.hypot(nx,ny)||1,c=Math.cos(pc.rot),s=Math.sin(pc.rot),wx=(nx*c-ny*s)/L,wy=(nx*s+ny*c)/L;
       [[P1,1],[P2,-1]].forEach(([poly,sg])=>{if(!hasPaper(poly))return;const np={poly,jag:jagged(poly,Math.random()*99),ox:pc.ox,oy:pc.oy,rot:pc.rot,vx:pc.vx+wx*sg*rand(90,160),vy:pc.vy+wy*sg*rand(90,160),vr:pc.vr+sg*rand(.3,1.2)};
         g.shreds++;if(area(poly)<260){const[cxp,cyp]=centroid(poly);const wcx=m.x+np.ox+(cxp*c-cyp*s)*m.s,wcy=m.y+np.oy+(cxp*s+cyp*c)*m.s;paperBurst(wcx,wcy,10,200);}else next.push(np);});}
-    if(did){g.pieces=next;g.cuts++;sfx('tear');buzz(20);setFace(m,'hit',.5);say('tear',(ax+bx)/2,Math.min(ay,by)-20);
+    if(did){g.pieces=next;if(splits>=3)ach('multirip');g.cuts++;sfx('tear');buzz(20);setFace(m,'hit',.5);say('tear',(ax+bx)/2,Math.min(ay,by)-20);
       for(let i=0;i<8;i++){const q=i/7;emit({type:'paper',x:ax+(bx-ax)*q,y:ay+(by-ay)*q,vx:rand(-80,80),vy:rand(-120,0),g:500,life:rand(.5,1),size:rand(3,6),color:'#f6f1e4',vr:rand(-8,8)});}
       const nh=Math.max(0,100*(1-(g.shreds-1)/(SHRED_GOAL-1)));damage(g,g.pieces.length?g.m.hp-nh:999);if(g.shreds>=SHRED_GOAL)damage(g,999);}
     return did;};
@@ -741,7 +759,7 @@ function makeCrumple(){const g=baseGame(),m=g.m;g.phase='crumple';g.rub=null;g.p
     const b=g.ball;if(!b)return;
     if(b.st==='fly'){const py=b.y;b.vy+=1500*dt;b.x+=b.vx*dt;b.y+=b.vy*dt;b.rot+=b.vx*.004;
       if(py<B.y&&b.y>=B.y&&b.vy>0){const dx=Math.abs(b.x-B.x);
-        if(dx<B.w/2-b.r*.3){b.st='in';b.sink=0;sfx('thunk');setTimeout(()=>sfx('ding'),120);shake(4,.15);paperBurst(B.x,B.y,12,160);damage(g,999);}
+        if(dx<B.w/2-b.r*.3){b.st='in';b.sink=0;if(!g.miss)ach('swish');sfx('thunk');setTimeout(()=>sfx('ding'),120);shake(4,.15);paperBurst(B.x,B.y,12,160);damage(g,999);}
         else if(dx<B.w/2+b.r){b.vy=-b.vy*.45;b.vx+=Math.sign(b.x-B.x)*140;sfx('clink',.6);}}
       if(b.y>H+80||b.x<-80||b.x>W+80){g.miss++;say('miss2',B.x,B.y-30,true);resetBall();}}
     else if(b.st==='in'){b.sink+=dt;b.x+=(B.x-b.x)*Math.min(1,dt*10);b.y=B.y+Math.min(40,b.sink*120);}
@@ -874,7 +892,7 @@ function startCat(){P.length=0;bubbles.length=0;$('#chant').hidden=true;
         f.vx+=(Math.random()-.5)*500*dt;f.vy+=(Math.random()-.5)*500*dt;const v=Math.hypot(f.vx,f.vy)||1,mv=340;if(v>mv){f.vx*=mv/v;f.vy*=mv/v;}f.vx*=1-Math.min(1,.8*dt);f.vy*=1-Math.min(1,.8*dt);
         f.x+=f.vx*dt;f.y+=f.vy*dt;const top=homeY+40*s;
         if(f.x<40){f.x=40;f.vx=Math.abs(f.vx);}if(f.x>W-40){f.x=W-40;f.vx=-Math.abs(f.vx);}if(f.y<top){f.y=top;f.vy=Math.abs(f.vy);}if(f.y>H-50){f.y=H-50;f.vy=-Math.abs(f.vy);}}
-      const mouthY=IMG.catgod?k.y+60*s-Math.min(260*s,H*.36)*.58:k.y-95*s;if(Math.hypot(f.x-(k.x-5*s),f.y-mouthY)<85*s){g.st='eat';g.stT=0;f.grab=null;markCodex('cat');sfx('chomp');setTimeout(()=>sfx('chomp'),300);setTimeout(()=>sfx('purr'),500);setTimeout(()=>sfx('ding'),900);sayText(t('catThanks'),k.x+70*s,k.y-150*s);}}
+      const mouthY=IMG.catgod?k.y+60*s-Math.min(260*s,H*.36)*.58:k.y-95*s;if(Math.hypot(f.x-(k.x-5*s),f.y-mouthY)<85*s){g.st='eat';g.stT=0;f.grab=null;markCodex('cat');ach('cat');if(bumpStat('cat')>=3)ach('cat3');sfx('chomp');setTimeout(()=>sfx('chomp'),300);setTimeout(()=>sfx('purr'),500);setTimeout(()=>sfx('ding'),900);sayText(t('catThanks'),k.x+70*s,k.y-150*s);}}
     else if(g.st==='eat'){if(Math.random()<dt*7)emit({type:'glyph',text:'♥',x:k.x+rand(-50,50)*s,y:k.y-150*s,vy:rand(-80,-40),vx:rand(-20,20),life:1.2,size:rand(16,24),color:'#f28fa8'});if(g.stT>2.4){g.st='out';g.stT=0;}}
     else if(g.st==='out'){k.y-=(60+g.stT*420)*dt;if(k.y<-260*s&&!g.fin){g.fin=true;$('#catSkip').hidden=true;showResult(true);}}};
   g.draw=c=>{const k=g.k;artBg(c,'cat')||drawBg(c,'#2a2140','#120f1c');
@@ -917,7 +935,7 @@ function startPoe(next){P.length=0;bubbles.length=0;ptrs.clear();$('.hp').hidden
     if(f[0]!==f[1])kind='holy';else kind=f[0]==='flat'?'laugh':'yin';
     if(kind==='holy'){g.streak++;sfx('ding');sparks(W/2,gy-60,18,'#ffe7a8');}else{g.streak=0;sfx(kind==='yin'?'thunk':'pop');}
     g.msg={kind,title:F.poeNames[kind],line:pick(F.poeLines[kind])};g.msgT=0;g.st='show';
-    if(g.streak>=3){S.poe3=true;g.msg={kind:'win',title:F.poeWin,line:F.poeWinLine};setTimeout(()=>sfx('ding'),250);setTimeout(()=>sfx('ding'),500);buzz([30,40,80]);
+    if(g.streak>=3){S.poe3=true;ach('poe3');g.msg={kind:'win',title:F.poeWin,line:F.poeWinLine};setTimeout(()=>sfx('ding'),250);setTimeout(()=>sfx('ding'),500);buzz([30,40,80]);
       for(let i=0;i<40;i++)emit({type:'spark',x:W/2+rand(-120,120),y:gy-80+rand(-60,60),vx:rand(-120,120),vy:rand(-260,-60),g:300,life:rand(.8,1.6),size:rand(1.5,3.5),color:pick(['#ffe9a8','#ffd34d','#fff6d8'])});}};
   g.update=dt=>{g.msgT+=dt;
     if(Math.random()<dt*3)g.smoke.push({x:W*.84+rand(-4,4),y:H*.36,t:0});g.smoke.forEach(p=>p.t+=dt);g.smoke=g.smoke.filter(p=>p.t<4);
@@ -952,6 +970,9 @@ async function paintedTalisman(img,name,verb,fortune,blessed){
   if(allCleared()){x.save();x.globalCompositeOperation='soft-light';const gg=x.createLinearGradient(0,0,1080,ih);gg.addColorStop(0,'#fff3b0');gg.addColorStop(.5,'#ffd34d');gg.addColorStop(1,'#fff0a0');x.fillStyle=gg;x.fillRect(0,0,1080,ih);x.restore();
     for(let i=0;i<50;i++){const sx=180+R()*720,sy=120+R()*(ih-240),r=2+R()*5;x.fillStyle=`rgba(255,255,240,${.4+R()*.5})`;x.beginPath();x.moveTo(sx,sy-r*2);x.lineTo(sx+r*.5,sy);x.lineTo(sx,sy+r*2);x.lineTo(sx-r*.5,sy);x.closePath();x.fill();}}
   const band=x.createLinearGradient(0,ih-260,0,ih+40);band.addColorStop(0,'rgba(13,11,20,0)');band.addColorStop(1,'rgba(13,11,20,1)');x.fillStyle=band;x.fillRect(0,ih-260,1080,300);x.fillStyle='#0d0b14';x.fillRect(0,ih+39,1080,2400-ih);
+  if(achReward('glow')){x.save();x.strokeStyle='rgba(255,90,60,.85)';x.lineWidth=10;x.shadowColor='rgba(255,80,40,1)';x.shadowBlur=40;rr(x,40,40,1000,ih-120,24);x.stroke();x.restore();}
+  if(achReward('master')){x.save();x.translate(330,ih-400);x.rotate(.12);x.globalAlpha=.9;x.strokeStyle='#c81e1e';x.lineWidth=8;x.beginPath();x.arc(0,0,80,0,7);x.stroke();x.lineWidth=3;x.beginPath();x.arc(0,0,66,0,7);x.stroke();
+    x.fillStyle='#c81e1e';x.font=`900 34px ${FONT_D}`;x.textAlign='center';x.textBaseline='middle';x.fillText(S.lang==='zh'?'退散':'MASTER',0,-16);x.fillText(S.lang==='zh'?'大師':'BANISHER',0,22);x.restore();}
   // random lucky seal stamped on the lower right of the paper
   x.save();x.translate(715,ih-420);x.rotate(-.14);x.globalAlpha=.9;x.fillStyle='#c81e1e';rr(x,-62,-62,124,124,10);x.fill();x.strokeStyle='#f3d27a';x.lineWidth=4;rr(x,-52,-52,104,104,6);x.stroke();
   const ch=[...pick(SEALS)];x.fillStyle='#f3d27a';x.font=`900 40px ${FONT_D}`;x.textAlign='center';x.textBaseline='middle';x.fillText(ch[0],22,-22);x.fillText(ch[1],22,22);x.fillText(ch[2],-22,-22);x.fillText(ch[3],-22,22);
@@ -961,7 +982,8 @@ async function paintedTalisman(img,name,verb,fortune,blessed){
   const fitF=(txt,max,size,font,weight)=>{let s=size;x.font=`${weight} ${s}px ${font}`;while(x.measureText(txt).width>max&&s>20){s-=2;x.font=`${weight} ${s}px ${font}`;}};
   x.textAlign='center';x.textBaseline='middle';
   const nl=S.lang==='zh'?`奉送「${name}」${verb}`:`"${name}" ${verb}`;fitF(nl,960,66,FONT_K,700);
-  x.fillStyle='#fff6e6';x.shadowColor='rgba(216,64,46,.6)';x.shadowBlur=18;x.fillText(nl,540,ih+70);x.shadowBlur=0;
+  if(achReward('goldText')){const tg=x.createLinearGradient(0,ih+40,0,ih+100);tg.addColorStop(0,'#fff3b0');tg.addColorStop(1,'#e2a83a');x.fillStyle=tg;}else x.fillStyle='#fff6e6';
+  x.shadowColor='rgba(216,64,46,.6)';x.shadowBlur=18;x.fillText(nl,540,ih+70);x.shadowBlur=0;
   const fl=(S.lang==='zh'?'今日運勢　':'Fortune: ')+fortune[0]+(S.lang==='zh'?'　':' · ')+fortune[1];fitF(fl,960,38,FONT_D,700);x.fillStyle='#ecc24c';x.fillText(fl,540,ih+150);
   fitF(S.headline,960,40,FONT_D,900);x.fillStyle='rgba(246,241,228,.85)';x.fillText(S.headline,540,ih+215);
   const d=new Date(),ds=`${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
@@ -1097,7 +1119,53 @@ const CODEX=[
  {id:'crumple',g:'揉',zh:['遊戲原創・揉爛丟掉','遊戲原創','辦公室人人都練過的傳統技藝（並不是）。'],en:['Game Original · Crumple & Toss','Game original','An ancient office tradition. (It is not.)']}
 ];
 let CODEX_SEEN=store.get('codex',[]);if(!Array.isArray(CODEX_SEEN))CODEX_SEEN=[];
-function markCodex(id){if(CODEX_SEEN.includes(id))return;CODEX_SEEN.push(id);store.set('codex',CODEX_SEEN);(S.newCodex=S.newCodex||[]).push(id);}
+function markCodex(id){if(CODEX_SEEN.includes(id))return;CODEX_SEEN.push(id);store.set('codex',CODEX_SEEN);(S.newCodex=S.newCodex||[]).push(id);
+  if(CODEX.every(c=>CODEX_SEEN.includes(c.id)))ach('folklore');}
+/* achievements: unlocked by playing; more of them make the shared talisman fancier */
+const ACH=[
+ ['first','初次退散','完成任何一局','First Banish','Finish any round'],
+ ['all8','全破','每種玩法都過關','Clean Sweep','Clear every mode'],
+ ['allS','全 S 大師','每種玩法都拿到 S','Straight S','Get an S in every mode'],
+ ['fast','秒殺','5 秒內過關（拖鞋除外）','Speedrun','Clear a round in 5 seconds (not Slipper)'],
+ ['combo30','連擊 30','拖鞋連擊 30 下','Combo 30','Hit a 30 combo with the slipper'],
+ ['gold','金拖鞋','30 秒內打滿 100 下','Golden Slipper','Land 100 slipper hits in 30 seconds'],
+ ['sharp','神射手','一局飛鏢爆頭 3 次','Sharpshooter','Three headshots in one darts round'],
+ ['face20','打臉犯規','累計打臉 20 次','Not the Face','Hit the face 20 times in total'],
+ ['crit','暴擊！','打出第一次暴擊','Critical!','Land your first critical hit'],
+ ['crit20','暴擊狂','累計暴擊 20 次','Crit Machine','Land 20 critical hits in total'],
+ ['multirip','一刀多片','一刀撕開 3 片以上','Multi-Rip','Rip 3 or more pieces with one swipe'],
+ ['swish','空心球','第一次丟就進垃圾桶','Swish','Bin the paper ball on the first throw'],
+ ['poe3','三聖筊','擲出連續三個聖筊','Three Holy Cups','Toss three holy cups in a row'],
+ ['cat','貓奴','餵貓貓神吃小魚乾','Cat Servant','Feed the Cat God'],
+ ['cat3','資深貓奴','餵貓貓神 3 次','Devoted Servant','Feed the Cat God three times'],
+ ['daily','每日一退','完成今日挑戰','Daily Banisher','Finish a daily challenge'],
+ ['streak3','連續 3 天','今日挑戰連續 3 天','3-Day Streak','Daily challenge 3 days in a row'],
+ ['streak7','連續 7 天','今日挑戰連續 7 天','7-Day Streak','Daily challenge 7 days in a row'],
+ ['midnight','丑時退散','凌晨 1～3 點完成一局','Hour of the Ox','Finish a round between 1 and 3 a.m.'],
+ ['timeout','慢慢來','撐到時間到才結束','Taking It Easy','Let a round run out the clock'],
+ ['share','廣結善緣','分享一次符咒','Spread the Word','Share a talisman'],
+ ['folklore','民俗學者','民俗圖鑑全部解鎖','Folklorist','Unlock every folklore card']
+];
+const ACH_REWARDS=[[5,'goldText'],[10,'glow'],[15,'master']];
+let ACH_GOT=store.get('ach',{});if(!ACH_GOT||typeof ACH_GOT!=='object')ACH_GOT={};
+let STATS=store.get('stats',{});if(!STATS||typeof STATS!=='object')STATS={};
+const achCount=()=>ACH.filter(a=>ACH_GOT[a[0]]).length;
+const achReward=k=>achCount()>=ACH_REWARDS.find(r=>r[1]===k)[0];
+function bumpStat(k,n=1){STATS[k]=(STATS[k]||0)+n;store.set('stats',STATS);return STATS[k];}
+const achQueue=[];let achShowing=false;
+function ach(id){if(ACH_GOT[id])return;const a=ACH.find(x=>x[0]===id);if(!a)return;ACH_GOT[id]=Date.now();store.set('ach',ACH_GOT);achQueue.push(a);if(!achShowing)nextAchToast();}
+function nextAchToast(){const a=achQueue.shift(),el=$('#achToast');if(!a){achShowing=false;el.hidden=true;return;}achShowing=true;
+  el.textContent=`🏆 ${t('achUnlocked')}：${S.lang==='zh'?a[1]:a[3]}`;el.hidden=false;el.style.animation='none';void el.offsetWidth;el.style.animation='';sfx('pop');setTimeout(nextAchToast,2400);}
+function roundAch(g){const sc=S.score,h=new Date().getHours();ach('first');if(h>=1&&h<3)ach('midnight');
+  if(sc){if(sc.timeout)ach('timeout');if(sc.mode!=='slipper'&&!sc.timeout&&sc.secs<=5)ach('fast');
+    if(sc.daily){ach('daily');if(sc.daily.streak>=3)ach('streak3');if(sc.daily.streak>=7)ach('streak7');}}
+  if(allCleared())ach('all8');if(MODE_IDS.every(id=>BEST[id]&&BEST[id].grade==='S'))ach('allS');}
+function renderAch(){const list=$('#achList');list.textContent='';const zh=S.lang==='zh',n=achCount();
+  $('#achCount').textContent=t('achCount')(n,ACH.length);
+  const rw=$('#achRewards');rw.textContent='';ACH_REWARDS.forEach(([need,k])=>{const li=document.createElement('span');li.className='ach-reward'+(n>=need?' on':'');li.textContent=t('achReward')(need,t('rw_'+k));rw.append(li);});
+  for(const a of ACH){const got=!!ACH_GOT[a[0]],d=document.createElement('div');d.className='ach-card'+(got?'':' locked');
+    const ic=document.createElement('span');ic.className='ach-icon';ic.textContent=got?'🏆':'🔒';const tx=document.createElement('div');
+    const b=document.createElement('b');b.textContent=zh?a[1]:a[3];const p2=document.createElement('small');p2.textContent=zh?a[2]:a[4];tx.append(b,p2);d.append(ic,tx);list.append(d);}}
 function renderCodex(){const list=$('#codexList');list.textContent='';const L=S.lang;
   for(const c of CODEX){const open=CODEX_SEEN.includes(c.id),d=document.createElement('div');d.className='codex-card'+(open?'':' locked');
     const sl=document.createElement('span');sl.className='seal';sl.textContent=open?c.g:'？';const tx=document.createElement('div');
@@ -1136,7 +1204,7 @@ function recordScore(g){markCodex(S.mode);const slip=S.mode==='slipper',secs=sli
   if(sc.isNew){BEST[S.mode]={mode:sc.mode,grade:sc.grade,secs:sc.secs,hits:sc.hits};store.set('best',BEST);}
   sc.unlockGold=!wasAll&&allCleared();S.score=sc;}
 const scoreVal=b=>b.mode==='slipper'?T[S.lang].hitsVal(b.hits):T[S.lang].secs(b.secs);
-function show(id){screen=id;if(id==='modesScr')renderModes();if(id==='codexScr')renderCodex();['intro','nameScr','modesScr','result','codexScr'].forEach(s=>$('#'+s).hidden=s!==id);$('#hud').hidden=id!=='play';$('#soundBtn').hidden=id==='intro';}
+function show(id){screen=id;if(id==='modesScr')renderModes();if(id==='codexScr')renderCodex();if(id==='achScr')renderAch();['intro','nameScr','modesScr','result','codexScr','achScr'].forEach(s=>$('#'+s).hidden=s!==id);$('#hud').hidden=id!=='play';$('#soundBtn').hidden=id==='intro';}
 function showHint(txt){const h=$('#hint');h.textContent=txt;h.style.animation='none';void h.offsetWidth;h.style.animation='';}
 function applyLang(){document.documentElement.lang=S.lang==='zh'?'zh-Hant':'en';
   document.querySelectorAll('[data-i18n]').forEach(el=>{const v=t(el.dataset.i18n);if(typeof v==='string')el.textContent=v;});
@@ -1150,11 +1218,12 @@ function renderModes(){const grid=$('#modeGrid');grid.textContent='';
   const td=todayChallenge(),dd=getDaily(),st=dailyStreak(),F=T[S.lang];
   $('#dailyTitle').textContent=`${F.daily} ${mmdd(td.key)}・${F.modes[td.mode][0]}`;
   $('#dailySub').textContent=[F.mods[td.mod],st?F.streak(st):'',dd.last===td.key&&dd.best?F.dailyBest(dd.best.grade,scoreVal(dd.best)):F.dailyNone].filter(Boolean).join('・');
+  $('#achBtn').textContent=`🏆 ${T[S.lang].achTitle} ${achCount()}/${ACH.length}`;
   const n=clearedCount();$('#dexLine').textContent=T[S.lang].dex(n)+'　'+(n===MODE_IDS.length?t('dexGold'):t('dexHint'));$('#dexLine').classList.toggle('gold',n===MODE_IDS.length);}
 function startMode(id,daily=false){$('.hp').hidden=false;S.daily=daily;S.mod=daily?todayChallenge().mod:null;S.mode=id;S.medal=null;S.slipHits=0;S.slipSecs=0;S.score=null;P.length=0;bubbles.length=0;ptrs.clear();$('#chant').hidden=true;$('#catSkip').hidden=true;
   G=MAKERS[id]();$('#hudTitle').textContent=(daily?t('daily')+'・':'')+t('modes')[id][0];$('#hudTime').textContent='';setHp(100);
   showHint(daily?`【${t('mods')[S.mod]}】${t('hints')[id]}`:t('hints')[id]);show('play');}
-function afterWin(){recordScore(G);S.poe3=false;startClear(()=>startPoe(()=>{if(Math.random()<.35)startCat();else showResult(false);}));}
+function afterWin(){recordScore(G);roundAch(G);S.poe3=false;startClear(()=>startPoe(()=>{if(Math.random()<.35)startCat();else showResult(false);}));}
 /* the refreshing finale: night turns to sunrise */
 function startClear(next){P.length=0;bubbles.length=0;ptrs.clear();$('#chant').hidden=true;$('#hudTime').textContent='';$('#hudTitle').textContent='';setHp(0);
   const g={t:0,fin:false,sub:pick(t('clearSubs'))};sfx('whoosh');setTimeout(()=>sfx('ding'),250);
@@ -1194,7 +1263,7 @@ async function showResult(blessed){G=null;P.length=0;bubbles.length=0;$('#catSki
 let DL=null;try{if(window.claude&&window.claude.use)window.claude.use('downloads').then(d=>{DL=d}).catch(()=>{});}catch(e){}
 function scoreLine(){const F=T[S.lang],sc=S.score;if(!sc)return '';return sc.mode==='slipper'?F.scoreSlip(sc.hits,sc.grade):F.scoreTime(sc.secs,sc.grade);}
 function shareText(){const F=T[S.lang],sc=S.score;let s=(sc&&sc.daily?F.dailyShare(mmdd(sc.daily.key),F.modes[S.mode][0],F.mods[sc.daily.mod],sc.daily.streak)+'\n':'')+F.shareMsg(S.headline,S.name,F.verbs[S.mode],S.fortune[0]+' '+S.fortune[1],scoreLine());if(S.medal)s+='\n🏅 '+F.medalLine(F.medals[S.medal],S.slipHits);return s+'\n'+F.challenge+' '+GAME_URL;}
-async function doShare(){const blob=S.talBlob;if(!blob)return;const msg=shareText();
+async function doShare(){const blob=S.talBlob;if(!blob)return;ach('share');const msg=shareText();
   try{const file=new File([blob],'xiaoren-tuisan.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],text:msg});return;}}
   catch(e){if(e&&e.name==='AbortError')return;}
   if(DL){try{await DL.save({filename:'xiaoren-tuisan.png',data:blob});toast(t('saved'));return;}catch(e){if(e&&e.code==='declined')return;}}
@@ -1211,6 +1280,9 @@ $('#toModes').addEventListener('click',goModes);
 $('#nameIn').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#nameIn').blur();goModes();}});
 $('#editName').addEventListener('click',()=>show('nameScr'));
 $('#codexBtn').addEventListener('click',()=>show('codexScr'));
+$('#achBtn').addEventListener('click',()=>show('achScr'));
+$('#achBack').addEventListener('click',()=>show('modesScr'));
+$('#lineBtn').addEventListener('click',()=>ach('share'));
 $('#codexBack').addEventListener('click',()=>show('modesScr'));
 $('#dailyBtn').addEventListener('click',()=>{audioInit();startMode(todayChallenge().mode,true);});
 $('#randomBtn').addEventListener('click',()=>{audioInit();const cards=[...document.querySelectorAll('.card')];const final=Math.floor(Math.random()*cards.length);let i=0;const total=14+final;

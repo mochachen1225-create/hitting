@@ -46,7 +46,7 @@ const save = (file, dataUrl) => fs.writeFileSync(file, Buffer.from(dataUrl.split
     x.fillStyle = '#f6f1e4'; x.fillText('小人退散', 58, 230);
     x.font = `700 34px ${FONT_B}`; x.fillStyle = '#ecc24c'; x.fillText('打小人手機小遊戲', 64, 300);
     x.font = `400 26px ${FONT_B}`; x.fillStyle = 'rgba(246,241,228,.85)';
-    ['拖鞋打・燒掉・釘草人・撕碎', '射飛鏢・泡水・揉爛・搖到暈', '打完領一張專屬符咒'].forEach((l, i) => x.fillText(l, 64, 370 + i * 42));
+    ['拖鞋打・燒掉・釘草人・撕碎・射飛鏢', '泡水・揉爛・搖到暈・撒豆・燒替身', '還能親手畫符，打完領專屬符咒'].forEach((l, i) => x.fillText(l, 64, 370 + i * 42));
     x.font = `700 22px ${FONT_B}`; x.fillStyle = 'rgba(169,163,191,.9)'; x.fillText('BEGONE, PETTY PEOPLE', 64, 560);
     return c.toDataURL('image/png');
   }));

@@ -1,16 +1,20 @@
 """Cuts the vertical trailer from staged game frames, Flow clips, captions and music.
-The music is a fake-horror opening that cuts to silence right before the slipper lands, then the comic track.
-Usage (repo root): python3 tools/trailer/build.py <zh|en> <workdir> <flow-clip-dir> [out.mp4]
+Both versions open on a temple bell over the slow approach and cut to silence just before the slipper lands; then
+  horror: the same horror track's heavy rhythm comes in on the hit;  light: the playful track takes over.
+Usage (repo root): python3 tools/trailer/build.py <zh|en> <workdir> <flow-clip-dir> [horror|light] [out.mp4]
 Needs ffmpeg. Run tools/trailer/stage.js and tools/trailer/cards.js first."""
 import json, os, subprocess, sys
 
 lang, WORK, FLOW = sys.argv[1], os.path.abspath(sys.argv[2]), os.path.abspath(sys.argv[3])
-OUTF = os.path.abspath(sys.argv[4] if len(sys.argv) > 4 else f'promo/trailer-{lang}.mp4')
-D, C, T = f'{WORK}/{lang}', f'{WORK}/caps/{lang}', f'{WORK}/build_{lang}'
+VARIANT = sys.argv[4] if len(sys.argv) > 4 else 'horror'
+OUTF = os.path.abspath(sys.argv[5] if len(sys.argv) > 5 else f'promo/trailer-{lang}-{VARIANT}.mp4')
+D, C, T = f'{WORK}/{lang}', f'{WORK}/caps/{lang}', f'{WORK}/build_{lang}_{VARIANT}'
 os.makedirs(T, exist_ok=True)
 HORROR = ('promo/audio/Toll_Of_The_Nameless_Shrine.mp3', 0.0)   # opens on a heavy temple bell that fades away
-MAIN = ('promo/audio/The_Bamboo_Tiptoe.mp3', 12.5)               # its busiest stretch runs ~12.5-37.5 s
-HIT = 3.2                    # trailer time when the slipper lands: horror stops just before, the comic track starts here
+MAINS = {'horror': ('promo/audio/Toll_Of_The_Nameless_Shrine.mp3', 8.03),   # its first heavy beat (8.05 s) lands on the slipper hit
+         'light': ('promo/audio/The_Bamboo_Tiptoe.mp3', 12.5)}             # its busiest stretch runs ~12.5-37.5 s
+MAIN = MAINS[VARIANT]
+HIT = 3.2                    # trailer time when the slipper lands: the bell stops just before, the main music starts here
 GAP = 0.15                   # the beat of silence before the hit
 FLOWS = {'slap': 'Hand_slapping_paper_figure_on_1943ac2f.mp4', 'beans': 'Soybeans_thrown_at_paper_effigy_4a18a762.mp4',
          'sunrise': 'Sunrise_over_misty_mountains_aadf0b99.mp4'}

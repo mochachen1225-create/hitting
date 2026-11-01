@@ -14,7 +14,7 @@
 | Generative AI disclosure | **Yes**，勾三項：AI Generated Graphics（背景、符咒、貓貓神由 Google Gemini／Flow 生成）、AI Generated Code（程式由 Claude Code 撰寫）、AI Generated Text & Dialog（介面文字、台詞、圖鑑由 Claude 撰寫，經人工挑選修改）。另外勾 AI Generated Sound（遊戲兩首背景音樂與廣告兩首配樂由 Google 的 AI 音樂工具生成；音效是程式即時合成） |
 | Cover image | `promo/cover-itch.png`（630 × 500） |
 | Screenshots | `promo/en/*.jpg`（英文介面，780 × 1688） |
-| Trailer | `promo/trailer-en.mp4`（直式 28 秒）；itch 只收 YouTube／Vimeo 連結，要先上傳 YouTube 再貼網址 |
+| Trailer | `promo/trailer-en-horror.mp4` 或 `trailer-en-light.mp4`（直式 28 秒，恐怖版／清爽版）；itch 只收 YouTube／Vimeo 連結，要先上傳 YouTube 再貼網址 |
 
 Newgrounds 用 `dist/xiaoren-tuisan-newgrounds-v<版本>.zip`：沒有 AI 圖也沒有 AI 音樂，所有場景、紙小人、拖鞋都用程式繪製版本。
 

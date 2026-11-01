@@ -100,7 +100,7 @@
 | `VERSION` | 版本號（要和 `src/game.html` 的 `VERSION` 常數一致） |
 | `tools/package.sh` | 打包 itch.io（含 AI 圖）和 Newgrounds（無 AI 圖）的上傳壓縮檔到 `dist/`，Mac、Linux 都能跑 |
 | `tools/make-promo.js` | 從真實遊戲拍中英文截圖和 itch 封面到 `promo/` |
-| `promo/` | 上架用截圖（`en/`、`zh/`）、itch 封面、試玩廣告 `trailer-zh.mp4`／`trailer-en.mp4`（直式 28 秒）、廣告配樂 `audio/`（AI 生成） |
+| `promo/` | 上架用截圖（`en/`、`zh/`）、itch 封面、試玩廣告 `trailer-<zh|en>-<horror|light>.mp4`（直式 28 秒，恐怖版／清爽版）、廣告配樂 `audio/`（AI 生成） |
 | `tools/trailer/` | 試玩廣告：`stage.js` 用虛擬時鐘連拍遊戲畫面、`cards.js` 做字卡和片尾卡、`build.py` 用 ffmpeg 剪輯配樂 |
 | `docs/itch-page.md` | itch.io 上架設定、中英文案、AI 標示、標籤 |
 | `tools/serve.js` | 測試用的本機伺服器（用 `file://` 開的頁面不能匯出含圖片的符咒） |
@@ -117,7 +117,7 @@
 
 **音效**：全部用 Web Audio API 即時合成（拍打、火焰、敲釘、撕紙、水花、貓叫、呼嚕等），沒有錄音檔，也沒有人聲。
 
-**背景音樂（AI 生成）**：〈Ascent of the Jade Throne〉（選單、結算）和〈Steps of the Jade Fox〉（遊戲中），由開發者用 Google 的 AI 音樂工具生成，可在右上角 ♫ 單獨關閉。試玩廣告另用〈Toll of the Nameless Shrine〉（恐怖開場）和〈The Bamboo Tiptoe〉，同樣是 AI 生成。上架 itch.io 時會勾選 AI Generated Sound。
+**背景音樂（AI 生成）**：〈Ascent of the Jade Throne〉（選單、結算）和〈Steps of the Jade Fox〉（遊戲中），由開發者用 Google 的 AI 音樂工具生成，可在右上角 ♫ 單獨關閉。試玩廣告另用〈Toll of the Nameless Shrine〉（恐怖版整支、清爽版開場）和〈The Bamboo Tiptoe〉（清爽版），同樣是 AI 生成。上架 itch.io 時會勾選 AI Generated Sound。
 
 **字型**（皆由 Google Fonts 提供，SIL Open Font License 1.1）：
 

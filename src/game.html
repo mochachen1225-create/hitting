@@ -263,8 +263,8 @@ const store={get(k,d){try{const v=localStorage.getItem('xr_'+k);return v==null?d
 /* ---------- copy ---------- */
 // seal phrases read in columns, right column first
 const SEALS=['小人絕緣','百無禁忌','貴人到位','霉運清零','好運連連','萬事如意','心想事成','諸事順心'];
-const MODE_IDS=['darts','slipper','burn','nail','tear','crumple','water','shake'];
-const GLYPH={darts:'鏢',slipper:'鞋',burn:'燒',nail:'釘',tear:'撕',crumple:'揉',water:'泡',shake:'搖'};
+const MODE_IDS=['darts','slipper','burn','nail','tear','crumple','water','shake','beans','jigai'];
+const GLYPH={darts:'鏢',slipper:'鞋',burn:'燒',nail:'釘',tear:'撕',crumple:'揉',water:'泡',shake:'搖',beans:'豆',jigai:'改'};
 // 打小人口訣：字幕一律繁體中文
 const CHANT=['打你個小人頭，打到你開會只會點頭','打你個小人手，打到你搶功勞就手抖','打你個小人腳，打到你插隊就踩到樂高','打你個小人嘴，打到你講壞話就咬到舌頭','打你個小人眼，打到你偷看別人手機就沒電','打你個小人耳，打到你聽八卦只聽到廣告','打你個小人鼻，打到你一說謊就打噴嚏','打你個小人肚，打到你偷吃零食就一直打嗝','打你個小人屁股，打到你一坐下就放屁','打你個小人頭髮，打到你天天睡醒都翹毛','打你個小人背，打到你以後專門倒楣','打你個小人心，打到你從此只想當好人'];
 const T={
@@ -279,21 +279,21 @@ const T={
   shareMsg:(h,n,v,f,sc)=>`${h}\n我把「${n}」${v}了（${sc}）\n今日運勢：${f}`,
   scoreTime:(s,g)=>`${s} 秒・評級 ${g}`,scoreSlip:(h,g)=>`30 秒打了 ${h} 下・評級 ${g}`,challenge:'你敢來挑戰嗎？👉',
   secs:s=>`${s} 秒`,hitsVal:h=>`${h} 下`,newRec:'新紀錄！',firstClear:'首次退散！',bestLine:(g,v)=>`最佳紀錄：${g}・${v}`,timeUp:'時間到，小人自己嚇跑了',
-  crit:'暴擊！×2',back:'返回',drawTitle:'親手畫符',drawSub:'畫一道符，貼在小人頭上，分享你的親筆符咒',drawHere:'在這裡畫符',drawClear:'清除',drawDone:'完成',drawMore:'再多畫幾筆吧',drawThrow:'點一下把符射出去',drawHint2:'看準時機點一下，把符貼到小人額頭上！',achTitle:'成就',achUnlocked:'成就解鎖',achCount:(n,m)=>`已解鎖 ${n} / ${m}`,achReward:(n,r)=>`${n} 個：${r}`,rw_goldText:'符咒金色字',rw_glow:'朱砂光框',rw_master:'退散大師印',
+  crit:'暴擊！×2',back:'返回',jigaiHints:{absorb:'把飄來飄去的黑色煞氣拖進紙替身裡',offer:'把小三牲（生豬肉、豆乾、鴨蛋）拖到供盤上',burn:'點紙替身，把它丟進金爐燒掉'},jigaiGoal:{absorb:n=>`煞氣還有 ${n} 團`,offer:n=>`供品還差 ${n} 樣`,burn:()=>'丟進金爐！'},jigaiFed:'吃飽了，走吧～',drawTitle:'親手畫符',drawSub:'畫一道符，貼在小人頭上，分享你的親筆符咒',drawHere:'在這裡畫符',drawClear:'清除',drawDone:'完成',drawMore:'再多畫幾筆吧',drawThrow:'點一下把符射出去',drawHint2:'看準時機點一下，把符貼到小人額頭上！',achTitle:'成就',achUnlocked:'成就解鎖',achCount:(n,m)=>`已解鎖 ${n} / ${m}`,achReward:(n,r)=>`${n} 個：${r}`,rw_goldText:'符咒金色字',rw_glow:'朱砂光框',rw_master:'退散大師印',
   disclaimer:'純屬娛樂：習俗介紹都是傳說與遊戲改編，不是真實歷史或宗教建議，也沒有任何效力。',
   codexOpen:'📜 民俗圖鑑',codexTitle:'民俗圖鑑',codexLocked:'？？？　玩過就會解鎖',codexCount:(n,m)=>`已解鎖 ${n} / ${m}`,codexNew:x=>`📜 新圖鑑：${x}`,
   poeTitle:'擲筊',poeHint:'點一下或往上滑擲筊。連續三個聖筊，運勢升級！',poeTap:'點一下擲筊',poeAsk:n=>`請問神明：「${n}」退散了嗎？`,poeLeft:n=>`還可以擲 ${n} 次`,
   poeNames:{holy:'聖筊！',laugh:'笑筊',yin:'陰筊'},
   poeLines:{holy:['神明點頭了','小人真的走了','再來一個！'],laugh:['神明笑到停不下來','神明說：換個問法啦','神明覺得這小人太好笑'],yin:['神明說：還沒退乾淨','小人還在偷看','神明搖頭了…']},
-  poeWin:'三聖筊！',poeWinLine:'神明蓋章：小人確定退散',poeFortune:['上上籤','三聖筊，神明親自蓋章'],poeBless:'三聖筊！運勢升級',daily:'今日挑戰',dailyGo:'挑戰',mods:{crit:'暴擊率 ×3',short:'限時 30 秒',tiny:'小人縮小',giant:'小人變大',none:'原汁原味'},streak:n=>`連續 ${n} 天`,dailyBest:(g,v)=>`今日最佳 ${g}・${v}`,dailyNone:'今天還沒挑戰',dailyDone:n=>`今日挑戰完成！連續 ${n} 天 🔥`,dailyShare:(d,m,mod,n)=>`【今日挑戰 ${d}｜${m}・${mod}】連續 ${n} 天`,dex:n=>`退散圖鑑 ${n} / 8`,dexHint:'八法全破，解鎖金符',dexGold:'金符已解鎖 ✨',goldUnlocked:'八法全破！之後的符咒都是金符 ✨',notYet:'未挑戰',
+  poeWin:'三聖筊！',poeWinLine:'神明蓋章：小人確定退散',poeFortune:['上上籤','三聖筊，神明親自蓋章'],poeBless:'三聖筊！運勢升級',daily:'今日挑戰',dailyGo:'挑戰',mods:{crit:'暴擊率 ×3',short:'限時 30 秒',tiny:'小人縮小',giant:'小人變大',none:'原汁原味'},streak:n=>`連續 ${n} 天`,dailyBest:(g,v)=>`今日最佳 ${g}・${v}`,dailyNone:'今天還沒挑戰',dailyDone:n=>`今日挑戰完成！連續 ${n} 天 🔥`,dailyShare:(d,m,mod,n)=>`【今日挑戰 ${d}｜${m}・${mod}】連續 ${n} 天`,dex:(n,m)=>`退散圖鑑 ${n} / ${m}`,dexHint:'全部玩法都過關，解鎖金符',dexGold:'金符已解鎖 ✨',goldUnlocked:'全部玩法都過關！之後的符咒都是金符 ✨',notYet:'未挑戰',
   headlines:['小人退散成功～','小人已退散，好運請進！','報告！小人已清除完畢','今日小人處理完畢，收工！','小人退散　萬歲！','霉運退散，貴人快來～','打完收工，神清氣爽','小人走開，好運過來','本日小人額度已用完'],
   medals:{gold:'金拖鞋獎',silver:'銀拖鞋獎',bronze:'銅拖鞋獎'},medalLine:(m,n)=>`獲得「${m}」：30 秒打了 ${n} 下`,medalTry:n=>`30 秒打了 ${n} 下，再快一點就有獎牌`,
   combo:'連擊',headshot:'爆頭！',sec:'秒',
   clearTitle:'神清氣爽～',clearSubs:['肩膀突然變輕了','空氣都變甜了','今天可以多吃一碗飯','嘴角自己往上揚','霉運已打包帶走'],tapOn:'點一下繼續',
-  modes:{draw:['親手畫符','畫符貼小人'],darts:['射飛鏢','射中 10 次'],slipper:['拖鞋打','30 秒挑戰 100 下'],burn:['燒掉','拿蠟燭追著燒'],nail:['釘草人','釘滿 10 根'],tear:['撕碎','撕成 60 片碎片'],crumple:['揉爛丟掉','揉成一團丟垃圾桶'],water:['泡水','拖進水裡泡到爛'],shake:['搖到暈','撞罐子 20 下']},
-  hints:{draw:'用手指在黃紙上畫一道符，畫好按「完成」',darts:'手指從下往上滑，射出飛鏢。小人會跑，射中 10 次就贏！',slipper:'30 秒計時！小人會亂跑，追著點它打。打滿 100 下拿金拖鞋獎',burn:'手指按住拖著蠟燭，一直追著小人燒。一離開火就會熄',nail:'點小人敲釘子，釘滿 10 根就封印！一指按住它不准動，另一指敲更準',tear:'手指快速劃過就撕開，越撕越碎！撕出 60 片碎片就贏，一刀劃過好幾片更快',crumple:'手指在小人身上來回搓，揉成紙團後往上甩進垃圾桶',water:'抓住小人拖進水裡壓著。它會躲你的手指，也會偷偷溜走，要再抓回來',shake:'搖手機，或按住罐子用力甩。讓小人撞罐子 20 下就贏'},
-  verbs:{draw:'用親筆符咒封印',darts:'射成刺蝟',slipper:'打成扁扁',burn:'燒成灰',nail:'釘在神木上',tear:'撕成碎片',crumple:'揉爛丟進垃圾桶',water:'泡到爛掉',shake:'搖到暈倒'},
-  react:{hit:['哎喲！','我錯了～','又是我？','下次不敢了','痛痛痛','饒命啊','嗚嗚嗚','我只是一張紙！','我要回家跟我媽講','再打我要報警了','好啦好啦我道歉','你這手勁練過的吧','我下次會乖啦','腰閃到了！'],face:['我是靠臉吃飯的！','不要打臉！明天還要拍照','我的偶像包袱啊！','臉腫了誰負責？','我的妝花了啦！','這張臉很貴的！','打臉犯規！','我的顏值掉光了'],dart:['啊！中了','好痛！','我變刺蝟了'],headshot:['正中腦門！','眼冒金星～'],miss:['射不到～','哈哈哈你射不到～','就這樣？','你是在射空氣嗎？','我閃～','左邊左邊，啊不是','眼睛要不要借你？','手很慢欸','差得遠咧～'],taunt:['打不到～','打不到～打不到～','來啊來啊～','打不到我吧略略略','你追不到我～','我還可以再跑十圈','就這點本事？','累了嗎？要不要休息','哈哈哈哈哈','慢吞吞～'],slip:['溜走了～掰掰','抓不住我啦！','滑溜溜～'],burn:['好燙啊～啊啊啊啊','燙燙燙燙燙！','救火啊！','屁股著火了！','我要變烤紙片了','誰幫我叫消防隊！','啊啊啊我的頭髮','早知道就不使壞了','好熱好熱好熱～','我只是紙啊！'],nail:['放開我！','我不敢了！','釘好緊！','我變成標本了','輕一點啦～','這是神木欸！'],tear:['我的腿！','碎了碎了','別撕了～'],crumple:['好皺！','別揉了～','我變醜了'],ball:['我變成球了…'],miss2:['丟不進～','再練練吧','差一點點'],water:['咕嚕咕嚕','我不會游泳！','好冰！','救命～'],shake:['好暈～','停！停！','我要吐了','天旋地轉']},
+  modes:{draw:['親手畫符','畫符貼小人'],beans:['節分撒豆','撒豆打中 40 顆'],jigai:['祭改燒替身','轉運、獻供、燒替身'],darts:['射飛鏢','射中 10 次'],slipper:['拖鞋打','30 秒挑戰 100 下'],burn:['燒掉','拿蠟燭追著燒'],nail:['釘草人','釘滿 10 根'],tear:['撕碎','撕成 60 片碎片'],crumple:['揉爛丟掉','揉成一團丟垃圾桶'],water:['泡水','拖進水裡泡到爛'],shake:['搖到暈','撞罐子 20 下']},
+  hints:{draw:'用手指在黃紙上畫一道符，畫好按「完成」',beans:'點畫面撒一把豆子打戴鬼面具的小人，打中 40 顆！金色「福」字點到加 3',jigai:'',darts:'手指從下往上滑，射出飛鏢。小人會跑，射中 10 次就贏！',slipper:'30 秒計時！小人會亂跑，追著點它打。打滿 100 下拿金拖鞋獎',burn:'手指按住拖著蠟燭，一直追著小人燒。一離開火就會熄',nail:'點小人敲釘子，釘滿 10 根就封印！一指按住它不准動，另一指敲更準',tear:'手指快速劃過就撕開，越撕越碎！撕出 60 片碎片就贏，一刀劃過好幾片更快',crumple:'手指在小人身上來回搓，揉成紙團後往上甩進垃圾桶',water:'抓住小人拖進水裡壓著。它會躲你的手指，也會偷偷溜走，要再抓回來',shake:'搖手機，或按住罐子用力甩。讓小人撞罐子 20 下就贏'},
+  verbs:{draw:'用親筆符咒封印',beans:'用豆子趕出門',jigai:'當成替身燒掉',darts:'射成刺蝟',slipper:'打成扁扁',burn:'燒成灰',nail:'釘在神木上',tear:'撕成碎片',crumple:'揉爛丟進垃圾桶',water:'泡到爛掉',shake:'搖到暈倒'},
+  react:{hit:['哎喲！','我錯了～','又是我？','下次不敢了','痛痛痛','饒命啊','嗚嗚嗚','我只是一張紙！','我要回家跟我媽講','再打我要報警了','好啦好啦我道歉','你這手勁練過的吧','我下次會乖啦','腰閃到了！'],face:['我是靠臉吃飯的！','不要打臉！明天還要拍照','我的偶像包袱啊！','臉腫了誰負責？','我的妝花了啦！','這張臉很貴的！','打臉犯規！','我的顏值掉光了'],dart:['啊！中了','好痛！','我變刺蝟了'],headshot:['正中腦門！','眼冒金星～'],miss:['射不到～','哈哈哈你射不到～','就這樣？','你是在射空氣嗎？','我閃～','左邊左邊，啊不是','眼睛要不要借你？','手很慢欸','差得遠咧～'],taunt:['打不到～','打不到～打不到～','來啊來啊～','打不到我吧略略略','你追不到我～','我還可以再跑十圈','就這點本事？','累了嗎？要不要休息','哈哈哈哈哈','慢吞吞～'],slip:['溜走了～掰掰','抓不住我啦！','滑溜溜～'],burn:['好燙啊～啊啊啊啊','燙燙燙燙燙！','救火啊！','屁股著火了！','我要變烤紙片了','誰幫我叫消防隊！','啊啊啊我的頭髮','早知道就不使壞了','好熱好熱好熱～','我只是紙啊！'],nail:['放開我！','我不敢了！','釘好緊！','我變成標本了','輕一點啦～','這是神木欸！'],tear:['我的腿！','碎了碎了','別撕了～'],crumple:['好皺！','別揉了～','我變醜了'],ball:['我變成球了…'],miss2:['丟不進～','再練練吧','差一點點'],water:['咕嚕咕嚕','我不會游泳！','好冰！','救命～'],shake:['好暈～','停！停！','我要吐了','天旋地轉'],beans:['豆子好痛！','我不是鬼啦！','福進來，我出去…','別再撒了'],jigai:['好重的霉運','我變黑了…','為什麼是我扛？','我只是替身啊']},
   fortunes:[['大吉','小人退散，貴人排隊'],['大吉','今天做什麼都順，連綠燈都等你'],['中吉','壞話傳不到你耳朵裡'],['中吉','今天的飲料第二杯半價'],['小吉','小人還在，但他今天一直塞車'],['吉','心情變好，看什麼都順眼'],['上上籤','回家摸摸貓，好運加倍']],
   blessed:['上上籤','貓貓神加持，諸事大吉']
  },
@@ -308,21 +308,21 @@ const T={
   shareMsg:(h,n,v,f,sc)=>`${h} 小人退散!\nI just ${v} "${n}" (${sc}).\nToday's fortune: ${f}`,
   scoreTime:(s,g)=>`${s}s, grade ${g}`,scoreSlip:(h,g)=>`${h} hits in 30s, grade ${g}`,challenge:'Think you can beat me? 👉',
   secs:s=>`${s}s`,hitsVal:h=>`${h} hits`,newRec:'New record!',firstClear:'First clear!',bestLine:(g,v)=>`Best: ${g} · ${v}`,timeUp:'Time up. It ran off scared',
-  crit:'CRIT! ×2',back:'Back',drawTitle:'Draw a Talisman',drawSub:'Draw your own talisman, stick it on the paper man, share it',drawHere:'Draw here',drawClear:'Clear',drawDone:'Done',drawMore:'Add a few more strokes',drawThrow:'Tap to fling the talisman',drawHint2:'Time your tap and stick the talisman on its forehead!',achTitle:'Achievements',achUnlocked:'Achievement',achCount:(n,m)=>`Unlocked ${n} / ${m}`,achReward:(n,r)=>`${n}: ${r}`,rw_goldText:'gold talisman text',rw_glow:'cinnabar glow frame',rw_master:'Master Banisher seal',
+  crit:'CRIT! ×2',back:'Back',jigaiHints:{absorb:'Drag the drifting dark clouds of bad luck into the paper stand-in',offer:'Drag the three offerings (raw pork, tofu, duck egg) onto the plate',burn:'Tap the stand-in to toss it into the furnace'},jigaiGoal:{absorb:n=>`${n} clouds left`,offer:n=>`${n} offerings left`,burn:()=>'Into the furnace!'},jigaiFed:'Full now. Off you go~',drawTitle:'Draw a Talisman',drawSub:'Draw your own talisman, stick it on the paper man, share it',drawHere:'Draw here',drawClear:'Clear',drawDone:'Done',drawMore:'Add a few more strokes',drawThrow:'Tap to fling the talisman',drawHint2:'Time your tap and stick the talisman on its forehead!',achTitle:'Achievements',achUnlocked:'Achievement',achCount:(n,m)=>`Unlocked ${n} / ${m}`,achReward:(n,r)=>`${n}: ${r}`,rw_goldText:'gold talisman text',rw_glow:'cinnabar glow frame',rw_master:'Master Banisher seal',
   disclaimer:'Just for fun: these folklore notes are playful retellings, not history or religious advice, and nothing here has any real effect.',
   codexOpen:'📜 Folklore',codexTitle:'Folklore',codexLocked:'??? Play to unlock',codexCount:(n,m)=>`Unlocked ${n} / ${m}`,codexNew:x=>`📜 New folklore: ${x}`,
   poeTitle:'Moon Blocks',poeHint:'Tap or swipe up to toss. Three holy cups in a row upgrades your fortune!',poeTap:'Tap to toss',poeAsk:n=>`Ask the gods: is "${n}" gone?`,poeLeft:n=>`${n} tosses left`,
   poeNames:{holy:'Holy cup!',laugh:'Laughing cup',yin:'Yin cup'},
   poeLines:{holy:['The gods nod','It is really gone','One more!'],laugh:["The gods can't stop laughing",'The gods say: ask it another way','The gods find this jerk hilarious'],yin:['The gods say: not gone yet','It is still peeking','The gods shake their heads...']},
-  poeWin:'Three holy cups!',poeWinLine:'Officially stamped: banished',poeFortune:['上上籤','Three holy cups, stamped by the gods'],poeBless:'Three holy cups! Fortune upgraded',daily:'Daily',dailyGo:'Play',mods:{crit:'Crit rate ×3',short:'30-second limit',tiny:'Tiny target',giant:'Giant target',none:'Classic'},streak:n=>`${n}-day streak`,dailyBest:(g,v)=>`Today's best ${g} · ${v}`,dailyNone:'Not played yet today',dailyDone:n=>`Daily challenge done! ${n}-day streak 🔥`,dailyShare:(d,m,mod,n)=>`[Daily ${d} | ${m} · ${mod}] ${n}-day streak`,dex:n=>`Banish log ${n} / 8`,dexHint:'Clear all 8 to unlock the gold talisman',dexGold:'Gold talisman unlocked ✨',goldUnlocked:'All 8 cleared! Your talismans are gold now ✨',notYet:'New',
+  poeWin:'Three holy cups!',poeWinLine:'Officially stamped: banished',poeFortune:['上上籤','Three holy cups, stamped by the gods'],poeBless:'Three holy cups! Fortune upgraded',daily:'Daily',dailyGo:'Play',mods:{crit:'Crit rate ×3',short:'30-second limit',tiny:'Tiny target',giant:'Giant target',none:'Classic'},streak:n=>`${n}-day streak`,dailyBest:(g,v)=>`Today's best ${g} · ${v}`,dailyNone:'Not played yet today',dailyDone:n=>`Daily challenge done! ${n}-day streak 🔥`,dailyShare:(d,m,mod,n)=>`[Daily ${d} | ${m} · ${mod}] ${n}-day streak`,dex:(n,m)=>`Banish log ${n} / ${m}`,dexHint:'Clear every mode to unlock the gold talisman',dexGold:'Gold talisman unlocked ✨',goldUnlocked:'Every mode cleared! Your talismans are gold now ✨',notYet:'New',
   headlines:['Petty person banished!','Bad luck, begone!','Mission complete: jerk removed','Petty people out, good luck in','Done and dusted. Feeling great','Banished with style','Daily jerk quota: used up'],
   medals:{gold:'Golden Slipper',silver:'Silver Slipper',bronze:'Bronze Slipper'},medalLine:(m,n)=>`${m} medal: ${n} hits in 30 seconds`,medalTry:n=>`${n} hits in 30 seconds. A bit faster earns a medal`,
   combo:'Combo',headshot:'Headshot!',sec:'s',
   clearTitle:'Ahh, refreshing!',clearSubs:['Shoulders feel lighter','Even the air tastes sweeter','Bad luck: packed and gone','Smile unlocked','Room for a second dessert'],tapOn:'Tap to continue',
-  modes:{draw:['Draw a Talisman','Draw it, stick it'],darts:['Darts','Land 10 hits'],slipper:['Slipper','100 hits in 30 seconds'],burn:['Burn','Chase it with a candle'],nail:['Nail','Drive 10 nails'],tear:['Tear','Shred into 60 pieces'],crumple:['Crumple & toss','Ball it up, bin it'],water:['Soak','Drown it to mush'],shake:['Shake','20 bonks in a jar']},
-  hints:{draw:'Draw a talisman on the yellow paper with your finger, then tap Done',darts:'Swipe up from the bottom to throw. It moves, so aim. 10 hits wins!',slipper:'30-second round! It runs around, so chase and tap it. 100 hits wins the Golden Slipper',burn:'Hold and drag the candle. Chase the paper man and burn it',nail:'Tap it to drive a nail. 10 nails seals it. Hold it still with one finger and hammer with another',tear:'Swipe across to rip. Shred it into 60 pieces; one swipe through many pieces is faster',crumple:'Rub back and forth on it to crumple, then flick the ball into the bin',water:'Grab it, drag it underwater and hold it down',shake:'Shake your phone, or grab the jar and fling it. 20 bonks wins'},
-  verbs:{draw:'sealed with a hand-drawn talisman',darts:'turned into a pincushion',slipper:'slippered flat',burn:'burned to ash',nail:'nailed to the sacred tree',tear:'torn to shreds',crumple:'crumpled and binned',water:'soaked to mush',shake:'shaken silly'},
-  react:{hit:['Ouch!','Sorry!','Me again?','Never again','Ow ow ow','Mercy!','Waaah',"I'm just paper!","I'm telling my mom","I'll call the police!",'Okay okay, I apologize','Did you train for this?','My back!'],face:['This face pays my bills!','Not the face! I have a photo shoot','My good looks!','Who pays if it swells?','My makeup!','This face is expensive!','Face hits are illegal!'],dart:['Got me!','Ouch!',"I'm a pincushion"],headshot:['Right in the head!','Seeing stars'],miss:['Hahaha, missed!','Is that all?','Aiming at the air?','Dodged~','Left, left... nope','Need glasses?','So slow!','Not even close~'],taunt:["Can't hit me~","Missed me~ missed me~",'Come at me~',"Can't catch me, nyah",'Too slow~','I could run ten more laps','That all you got?','Tired already?','Hahahaha','Slowpoke~'],slip:['Slipped away, bye~',"Can't hold me!",'Slippery~'],burn:['So hot! Aaaaah!','Hot hot hot hot!','Fire!','My butt is on fire!',"I'm turning into toast",'Call the fire department!','My hair! Aaah!','Should have been nicer...',"I'm only paper!"],nail:['Let me go!','I give up!','So tight!'],tear:['My leg!','Shredded!','Stop ripping!'],crumple:['So wrinkly!','Stop it!',"I'm ugly now"],ball:["I'm a ball now..."],miss2:['Missed the bin!','Practice more','So close'],water:['Glub glub',"I can't swim!",'So cold!','Help!'],shake:['So dizzy','Stop! Stop!',"I'm gonna hurl",'Spinning...']},
+  modes:{draw:['Draw a Talisman','Draw it, stick it'],beans:['Bean Toss','Land 40 beans'],jigai:['Bad-Luck Transfer','Absorb, offer, burn'],darts:['Darts','Land 10 hits'],slipper:['Slipper','100 hits in 30 seconds'],burn:['Burn','Chase it with a candle'],nail:['Nail','Drive 10 nails'],tear:['Tear','Shred into 60 pieces'],crumple:['Crumple & toss','Ball it up, bin it'],water:['Soak','Drown it to mush'],shake:['Shake','20 bonks in a jar']},
+  hints:{draw:'Draw a talisman on the yellow paper with your finger, then tap Done',beans:'Tap to throw a handful of beans at the masked oni. Land 40! Tap a golden 福 for +3',jigai:'',darts:'Swipe up from the bottom to throw. It moves, so aim. 10 hits wins!',slipper:'30-second round! It runs around, so chase and tap it. 100 hits wins the Golden Slipper',burn:'Hold and drag the candle. Chase the paper man and burn it',nail:'Tap it to drive a nail. 10 nails seals it. Hold it still with one finger and hammer with another',tear:'Swipe across to rip. Shred it into 60 pieces; one swipe through many pieces is faster',crumple:'Rub back and forth on it to crumple, then flick the ball into the bin',water:'Grab it, drag it underwater and hold it down',shake:'Shake your phone, or grab the jar and fling it. 20 bonks wins'},
+  verbs:{draw:'sealed with a hand-drawn talisman',beans:'pelted out the door with beans',jigai:'burned as a stand-in',darts:'turned into a pincushion',slipper:'slippered flat',burn:'burned to ash',nail:'nailed to the sacred tree',tear:'torn to shreds',crumple:'crumpled and binned',water:'soaked to mush',shake:'shaken silly'},
+  react:{hit:['Ouch!','Sorry!','Me again?','Never again','Ow ow ow','Mercy!','Waaah',"I'm just paper!","I'm telling my mom","I'll call the police!",'Okay okay, I apologize','Did you train for this?','My back!'],face:['This face pays my bills!','Not the face! I have a photo shoot','My good looks!','Who pays if it swells?','My makeup!','This face is expensive!','Face hits are illegal!'],dart:['Got me!','Ouch!',"I'm a pincushion"],headshot:['Right in the head!','Seeing stars'],miss:['Hahaha, missed!','Is that all?','Aiming at the air?','Dodged~','Left, left... nope','Need glasses?','So slow!','Not even close~'],taunt:["Can't hit me~","Missed me~ missed me~",'Come at me~',"Can't catch me, nyah",'Too slow~','I could run ten more laps','That all you got?','Tired already?','Hahahaha','Slowpoke~'],slip:['Slipped away, bye~',"Can't hold me!",'Slippery~'],burn:['So hot! Aaaaah!','Hot hot hot hot!','Fire!','My butt is on fire!',"I'm turning into toast",'Call the fire department!','My hair! Aaah!','Should have been nicer...',"I'm only paper!"],nail:['Let me go!','I give up!','So tight!'],tear:['My leg!','Shredded!','Stop ripping!'],crumple:['So wrinkly!','Stop it!',"I'm ugly now"],ball:["I'm a ball now..."],miss2:['Missed the bin!','Practice more','So close'],water:['Glub glub',"I can't swim!",'So cold!','Help!'],shake:['So dizzy','Stop! Stop!',"I'm gonna hurl",'Spinning...'],beans:['Beans hurt!',"I'm not a demon!",'Luck in, me out...','Enough beans!'],jigai:['So much bad luck','I am turning black...','Why do I carry it?',"I'm only a stand-in!"]},
   fortunes:[['大吉','Petty people gone, good people queue up'],['大吉','Even the traffic lights wait for you'],['中吉','Gossip never reaches your ears'],['中吉','Second drink half price today'],['小吉',"They're still around, but stuck in traffic"],['吉','Good mood, everything looks right'],['上上籤','Go pet a cat for double luck']],
   blessed:['上上籤','Blessed by the Cat God. All is well']
  }
@@ -467,7 +467,10 @@ function drawManLocal(c,m,shadow=true){
   if(m.crumple>0){c.strokeStyle=`rgba(90,80,60,${.55*m.crumple})`;c.lineWidth=1.3;
     for(let i=0;i<16;i++){const a=hash(m.seed+i)*6.28,r=hash(m.seed+i+.5)*80,x=Math.cos(a)*r*.6,y=Math.sin(a)*r;c.beginPath();c.moveTo(x-30*hash(i+2),y-20);c.lineTo(x+20,y+30*hash(i+3));c.lineTo(x+40*hash(i+4)-20,y+50);c.stroke();}}
   c.restore();
-  c.save();c.scale(sh,sh);drawName(c,m);drawFace(c,m);c.restore();
+  c.save();c.scale(sh,sh);drawName(c,m);
+  if(m.oni){c.save();c.fillStyle='#e9d9a0';[[-1,1],[1,1]].forEach(([d])=>{c.beginPath();c.moveTo(d*10,-88);c.lineTo(d*20,-112);c.lineTo(d*22,-86);c.closePath();c.fill();});
+    c.beginPath();c.arc(0,-68,24,0,7);c.fillStyle='#d8402e';c.fill();c.fillStyle='#fff';c.beginPath();c.moveTo(-8,-56);c.lineTo(-5,-49);c.lineTo(-2,-56);c.moveTo(2,-56);c.lineTo(5,-49);c.lineTo(8,-56);c.fill();c.restore();}
+  drawFace(c,m);c.restore();
   c.restore();}
 function drawDart(c,x,y,a,k=1){c.save();c.translate(x,y);c.rotate(a);c.scale(k,k);
   c.strokeStyle='#cfd6de';c.lineWidth=2;c.beginPath();c.moveTo(6,0);c.lineTo(22,0);c.stroke();
@@ -825,6 +828,74 @@ function makeShake(){const g=baseGame(),m=g.m;g.hits=0;const jw=Math.min(W*.66,2
   g.up=p=>{if(g.drag&&g.drag.id===p.id)g.drag=null;};
   return g;}
 
+/* ---------- 9. setsubun beans: pelt the oni-masked paper man ---------- */
+const BEAN_GOAL=40;
+function makeBeans(){const g=baseGame(),m=g.m;m.s*=.8;m.oni=true;m.y=H*.36;g.beans=[];g.hits=0;g.vx=120;g.chantN=0;g.fuku=null;g.lastFuku=0;
+  $('#chant').hidden=false;const chant=()=>{const zh=S.lang==='zh',k=g.chantN++%2;$('#chant .done').textContent=k?(zh?'福は内！（福進來！）':'Fuku wa uchi! (Luck in!)'):(zh?'鬼は外！（鬼出去！）':'Oni wa soto! (Demons out!)');$('#chant .rest').textContent='';};chant();
+  g.update=dt=>{tickFace(m,dt);
+    if(!g.done){g.cool=(g.cool||0)-dt;const sp=190+g.hits*5;if(Math.random()<dt*.8)g.vx=(Math.random()<.5?-1:1)*sp*rand(.7,1.2);m.x+=g.vx*dt;const mx=70*m.s;if(m.x<mx){m.x=mx;g.vx=Math.abs(g.vx);}if(m.x>W-mx){m.x=W-mx;g.vx=-Math.abs(g.vx);}
+      g.hopT=(g.hopT||0)+dt*6;m.y=H*.36-Math.abs(Math.sin(g.hopT))*14;m.rot=g.vx/600;}
+    else{m.y+=dt*260;m.rot+=dt*2;m.alpha=Math.max(0,m.alpha-dt*.8);}
+    for(const b of g.beans){b.t+=dt;b.vy+=(b.hit?900:0)*dt;b.x+=b.vx*dt;b.y+=b.vy*dt;b.rot+=dt*10;
+      if(!b.hit&&!g.done&&hitMan(m,b.x,b.y,4)){b.hit=true;b.vx=rand(-120,120);b.vy=rand(-200,-60);g.hits++;sfx('clink',.35);buzz(6);setFace(m,'hit',.3);m.bruises.length<40&&m.bruises.push([...toLocal(m,b.x,b.y),6]);
+        if(g.hits%6===0)say('beans',m.x,headY(m));damage(g,100/BEAN_GOAL);}
+      if(!b.hit&&b.t>.5){b.hit=true;b.vx*=.3;b.vy=0;}}
+    g.beans=g.beans.filter(b=>b.y<H+30&&b.t<2.5);
+    if(!g.done&&!g.fuku&&g.hits-g.lastFuku>=10){g.lastFuku=g.hits;g.fuku={x:rand(60,W-60),y:175,t:0};}
+    if(g.fuku){g.fuku.t+=dt;g.fuku.y+=70*dt;g.fuku.x+=Math.sin(g.fuku.t*3)*40*dt;if(g.fuku.y>H*.75)g.fuku=null;}
+    endCheck(g,dt);};
+  g.draw=c=>{artBg(c,'nail')||drawBg(c,'#1d1426','#0c0a12');spot(c,W/2,H*.36,W*.7,.12);drawMan(c,m);
+    for(const b of g.beans){c.save();c.translate(b.x,b.y);c.rotate(b.rot);c.fillStyle='#d9b07a';c.beginPath();c.ellipse(0,0,7,5.5,0,0,7);c.fill();c.fillStyle='rgba(255,240,210,.6)';c.beginPath();c.ellipse(-2,-2,2.5,1.6,0,0,7);c.fill();c.restore();}
+    if(g.fuku){const f=g.fuku;c.save();c.translate(f.x,f.y);c.rotate(Math.sin(f.t*2)*.2);c.fillStyle='#d8402e';rr(c,-26,-26,52,52,6);c.fill();c.fillStyle='#ffd34d';c.font=`900 34px ${FONT_D}`;c.textAlign='center';c.textBaseline='middle';c.fillText('福',0,2);c.restore();}
+    drawGoal(c,`${S.lang==='zh'?'命中':'Hits'} ${Math.min(g.hits,BEAN_GOAL)} / ${BEAN_GOAL}`,g.hits>=30);};
+  g.down=p=>{if(g.done)return;const f=g.fuku;if(f&&Math.hypot(p.x-f.x,p.y-f.y)<44){g.fuku=null;g.hits+=3;damage(g,300/BEAN_GOAL);sfx('ding');sparks(f.x,f.y,20,'#ffd34d');emit({type:'glyph',text:'+3',x:f.x,y:f.y-30,vy:-60,life:.9,size:26,color:'#ffd34d'});return;}
+    if(g.cool>0)return;g.cool=.32;chant();sfx('whoosh');for(let i=0;i<3;i++){const sx=W/2+rand(-30,30),sy=H-60,tx=p.x+rand(-48,48),ty=p.y+rand(-40,40),d=Math.hypot(tx-sx,ty-sy)||1,v=1500;g.beans.push({x:sx,y:sy,vx:(tx-sx)/d*v,vy:(ty-sy)/d*v,t:0,rot:rand(0,6)});}};
+  return g;}
+
+/* ---------- 10. jigai: move the bad luck onto a paper stand-in, feed the spirits, burn it ---------- */
+function makeJigai(){const g=baseGame(),m=g.m;m.s*=.85;m.y=H*.46;g.phase='absorb';g.taint=0;g.grab=null;
+  g.clouds=[...Array(6)].map(()=>({x:rand(50,W-50),y:rand(H*.15,H*.7),vx:rand(-50,50),vy:rand(-40,40),r:rand(22,30),ph:rand(0,6),done:false}));
+  const plate={x:W*.27,y:H*.83},furnace={x:W*.78,y:H*.83};
+  g.items=[{k:'pork',x:W*.2,y:H*.71},{k:'tofu',x:W*.5,y:H*.71},{k:'egg',x:W*.8,y:H*.71}].map(o=>({...o,hx:o.x,hy:o.y,fed:false}));
+  const phaseHint=()=>showHint(t('jigaiHints')[g.phase]);
+  g.update=dt=>{tickFace(m,dt,g.taint>.5?'scared':'smug');
+    if(g.phase==='absorb'){for(const cl of g.clouds){if(cl.done||g.grab===cl)continue;cl.ph+=dt;cl.x+=cl.vx*dt+Math.sin(cl.ph*2)*20*dt;cl.y+=cl.vy*dt;
+        if(cl.x<30||cl.x>W-30)cl.vx*=-1;if(cl.y<110||cl.y>H*.75)cl.vy*=-1;cl.x=clamp(cl.x,30,W-30);cl.y=clamp(cl.y,110,H*.75);}}
+    if(g.phase==='burn'&&g.flying){const f=g.flying;f.t+=dt;const q=Math.min(1,f.t/.6);m.x=f.sx+(furnace.x-f.sx)*q;m.y=f.sy+(furnace.y-30-f.sy)*q-Math.sin(q*Math.PI)*120;m.rot+=dt*6;m.s*=1-dt*.6;
+      if(q>=1&&!g.done){g.flying=null;m.alpha=0;sfx('ignite');buzz([30,40,60]);for(let i=0;i<40;i++)emit({type:'fire',x:furnace.x+rand(-30,30),y:furnace.y-30,vx:rand(-60,60),vy:rand(-300,-120),life:rand(.5,1.1),size:rand(14,28)});damage(g,999);}}
+    if(g.done&&Math.random()<.5)emit({type:'fire',x:furnace.x+rand(-25,25),y:furnace.y-35,vy:rand(-200,-80),life:rand(.4,.9),size:rand(10,22)});
+    endCheck(g,dt);};
+  const drawItem=(c,o)=>{c.save();c.translate(o.x,o.y);
+    if(o.k==='pork'){c.fillStyle='#e8908a';rr(c,-26,-14,52,28,8);c.fill();c.fillStyle='#fbe6dc';c.fillRect(-26,-4,52,7);}
+    else if(o.k==='tofu'){c.fillStyle='#8a5a32';rr(c,-20,-16,40,32,4);c.fill();c.strokeStyle='rgba(255,220,170,.35)';c.lineWidth=1.5;for(let i=-1;i<=1;i++){c.beginPath();c.moveTo(i*10,-16);c.lineTo(i*10,16);c.stroke();}}
+    else{c.fillStyle='#cfe6df';c.beginPath();c.ellipse(0,0,15,20,0,0,7);c.fill();c.fillStyle='rgba(255,255,255,.6)';c.beginPath();c.ellipse(-5,-7,4,6,0,0,7);c.fill();}
+    c.restore();};
+  g.draw=c=>{artBg(c,'burn')||drawBg(c,'#160d0c','#070505');spot(c,W/2,H*.46,W*.75,.1);
+    // plate and furnace
+    c.fillStyle='rgba(250,245,235,.92)';c.beginPath();c.ellipse(plate.x,plate.y,62,18,0,0,7);c.fill();c.strokeStyle='#c81e1e';c.lineWidth=3;c.stroke();
+    c.save();c.translate(furnace.x,furnace.y);c.fillStyle='#5a1a12';rr(c,-48,-46,96,70,8);c.fill();c.fillStyle='#c8932e';c.beginPath();c.moveTo(-58,-46);c.lineTo(0,-78);c.lineTo(58,-46);c.closePath();c.fill();
+    const gl=c.createRadialGradient(0,-14,4,0,-14,34);gl.addColorStop(0,'#ffd27a');gl.addColorStop(1,'#a3260f');c.fillStyle=gl;rr(c,-26,-30,52,34,6);c.fill();c.fillStyle='#ffe2a0';c.font=`900 15px ${FONT_D}`;c.textAlign='center';c.fillText(S.lang==='zh'?'金爐':'Furnace',0,16);c.restore();
+    if(m.alpha>0){drawMan(c,m);if(g.taint>0){c.save();c.globalAlpha=Math.min(.7,g.taint*.7);c.translate(m.x,m.y);c.rotate(m.rot);c.scale(m.s,m.s);c.beginPath();polyPath(c,BODY);polyPath(c,HEAD);c.fillStyle='#2a1f3a';c.fill();c.restore();}}
+    for(const it of g.items){if(g.phase!=='absorb'||it.fed)drawItem(c,it);}
+    if(g.phase==='absorb')for(const cl of g.clouds){if(cl.done)continue;c.save();c.translate(cl.x,cl.y);const r=cl.r*(1+Math.sin(cl.ph*3)*.06);
+      const gr=c.createRadialGradient(0,0,2,0,0,r*1.4);gr.addColorStop(0,'rgba(30,20,45,.95)');gr.addColorStop(1,'rgba(30,20,45,0)');c.fillStyle=gr;c.beginPath();c.arc(0,0,r*1.4,0,7);c.fill();
+      c.fillStyle='#ff5a4a';c.beginPath();c.ellipse(-7,-2,3.5,2,-.4,0,7);c.ellipse(7,-2,3.5,2,.4,0,7);c.fill();c.restore();}
+    const left=g.phase==='absorb'?g.clouds.filter(x=>!x.done).length:g.phase==='offer'?g.items.filter(x=>!x.fed).length:1;
+    drawGoal(c,t('jigaiGoal')[g.phase](left),false);};
+  g.down=p=>{if(g.done)return;
+    if(g.phase==='absorb'){const cl=g.clouds.find(o=>!o.done&&Math.hypot(o.x-p.x,o.y-p.y)<o.r*1.6);if(cl)g.grab={o:cl,id:p.id,dx:cl.x-p.x,dy:cl.y-p.y};}
+    else if(g.phase==='offer'){const it=g.items.find(o=>!o.fed&&Math.hypot(o.x-p.x,o.y-p.y)<44);if(it)g.grab={o:it,id:p.id,dx:it.x-p.x,dy:it.y-p.y};}
+    else if(g.phase==='burn'&&!g.flying&&hitMan(m,p.x,p.y,20)){g.flying={t:0,sx:m.x,sy:m.y};sfx('whoosh');say('burn',m.x,headY(m),true);}};
+  g.move=p=>{const gr=g.grab;if(gr&&gr.id===p.id){gr.o.x=p.x+gr.dx;gr.o.y=p.y+gr.dy;}};
+  g.up=p=>{const gr=g.grab;if(!gr||gr.id!==p.id)return;g.grab=null;const o=gr.o;
+    if(g.phase==='absorb'){if(hitMan(m,o.x,o.y,30)){o.done=true;g.taint+=1/6;sfx('whoosh');setFace(m,'hit',.4);say('jigai',m.x,headY(m));buzz(15);
+        for(let i=0;i<10;i++)emit({x:o.x,y:o.y,vx:rand(-80,80),vy:rand(-80,80),life:.6,size:rand(3,6),color:'rgba(40,25,60,.8)'});
+        if(g.clouds.every(x=>x.done)){g.phase='offer';phaseHint();sfx('ding');}}}
+    else if(g.phase==='offer'){if(Math.hypot(o.x-plate.x,o.y-plate.y)<70){o.fed=true;const n=g.items.filter(x=>x.fed).length;o.x=plate.x+(n-2)*34;o.y=plate.y-10;sfx('chomp');
+        if(g.items.every(x=>x.fed)){g.phase='burn';phaseHint();sfx('ding');sayText(t('jigaiFed'),plate.x,plate.y-60);}}else{o.x=o.hx;o.y=o.hy;}}};
+  setTimeout(phaseHint,0);
+  return g;}
+
 /* ---------- hand-drawn talisman: draw it, then stick it on the hopping paper man ---------- */
 // strokes are stored in paper-relative units (0..1) so the shared talisman can redraw them at full size
 function drawStrokes(c,strokes,rx,ry,rw,rh,col='#b3121c'){c.save();c.strokeStyle=col;c.fillStyle=col;c.lineCap='round';c.lineJoin='round';
@@ -1134,7 +1205,7 @@ async function makeTalisman(name,verb,fortune,blessed,plain){
   catch(e){if(plain)throw e;return makeTalisman(name,verb,fortune,blessed,true);}}
 
 /* ---------- flow ---------- */
-const MAKERS={draw:makeDraw,darts:makeDarts,slipper:makeSlipper,burn:makeBurn,nail:makeNail,tear:makeTear,crumple:makeCrumple,water:makeWater,shake:makeShake};
+const MAKERS={draw:makeDraw,beans:makeBeans,jigai:makeJigai,darts:makeDarts,slipper:makeSlipper,burn:makeBurn,nail:makeNail,tear:makeTear,crumple:makeCrumple,water:makeWater,shake:makeShake};
 let G=null,screen='intro';const ROUND_MAX=60;
 /* folklore codex: playful retellings, unlocked by playing */
 const CODEX=[
@@ -1144,6 +1215,8 @@ const CODEX=[
  {id:'burn',g:'燒',zh:['厄瓜多・燒舊年','傳說改編','相傳在厄瓜多，跨年夜午夜會把紙紮人偶燒掉，把一整年的霉運燒光，還有人會跳過火堆。遊戲改成拿蠟燭追著燒。'],en:['Ecuador · Burning the Old Year','Inspired by folklore',"In Ecuador, it's said that at midnight on New Year's Eve people burn papier-mache effigies to torch the old year's bad luck, and some leap over the flames. Here you chase yours with a candle."]},
  {id:'shake',g:'搖',zh:['台灣・搖籤筒','靈感改編','台灣廟裡求籤要搖籤筒，搖到有一支籤掉出來。遊戲把籤換成小人，搖到它暈倒為止。'],en:['Taiwan · Fortune Sticks','Our own twist','At Taiwanese temples you shake a cup of bamboo fortune sticks until one falls out. We swapped the sticks for the paper man and shake until it is dizzy.']},
  {id:'poe',g:'筊',zh:['台灣・擲筊','傳說改編','台灣廟裡問神明會擲筊：一平一凸是聖筊（同意），兩個平面朝上是笑筊（神明笑了，換個問法），兩個凸面朝上是陰筊（不同意）。重要的事要連續三個聖筊才算數。'],en:['Taiwan · Moon Blocks','Inspired by folklore',"At Taiwanese temples you ask the gods by tossing two crescent blocks. One flat and one round side up is a 'holy cup' (yes); both flat is a 'laughing cup' (ask again); both round is a 'yin cup' (no). Big questions need three holy cups in a row."]},
+ {id:'beans',g:'豆',zh:['日本・節分撒豆','傳說改編','相傳日本在節分（立春前一天，約 2 月初）會撒豆驅鬼，一邊喊「鬼は外！福は内！」（鬼出去、福進來），常由家人戴鬼面具當靶。遊戲裡的鬼是戴面具的紙小人。'],en:['Japan · Setsubun Bean Toss','Inspired by folklore',"On Setsubun, the day before spring in early February, families in Japan are said to throw roasted beans while shouting 'Oni wa soto! Fuku wa uchi!' (Demons out! Luck in!), often at a relative wearing a demon mask. Here the demon is our masked paper man."]},
+ {id:'jigai',g:'改',zh:['台灣・祭改','傳說改編','相傳台灣的祭改會用紙或草做的替身，把壞運轉移到替身上，再用生豬肉、豆乾、鴨蛋等小三牲讓煞吃飽離開。遊戲把步驟簡化成拖一拖、燒一燒。'],en:['Taiwan · Jigai','Inspired by folklore',"Taiwan's jigai ritual is said to move bad luck onto a paper or straw stand-in, then offer raw pork, dried tofu and duck eggs so troublesome spirits eat and leave. We simplified it to drag, feed and burn."]},
  {id:'cat',g:'貓',zh:['遊戲原創・貓貓神','遊戲原創','香港驚蟄的習俗會祭白虎，餵牠吃肉讓牠不再作亂。我們把白老虎換成只想吃小魚乾的貓貓神。'],en:['Game Original · The Cat God','Game original',"Hong Kong's Jingzhe ritual feeds a paper white tiger so it stays out of trouble. We replaced the tiger with a Cat God who only wants dried fish."]},
  {id:'fu',g:'符',zh:['東亞・黃紙朱砂','傳說改編','東亞許多地方的符都是黃紙配紅色朱砂，韓國叫부적。遊戲的符文是「小人退散」的注音，沒有任何法力。'],en:['East Asia · Yellow Paper, Red Ink','Inspired by folklore',"Across East Asia, talismans are often red ink on yellow paper; in Korea they are called bujeok. Ours spells 'xiao ren tui san' in Zhuyin and has zero magical power."]},
  {id:'darts',g:'鏢',zh:['遊戲原創・射飛鏢','遊戲原創','沒有這種習俗，純粹覺得射飛鏢很紓壓。'],en:['Game Original · Darts','Game original','Not a real custom. Throwing darts is just very relaxing.']},
@@ -1218,7 +1291,7 @@ function dailyStreak(){const d=getDaily(),td=dayKey(),yd=dayKey(new Date(Date.no
 const mmdd=k=>`${+k.slice(5,7)}/${+k.slice(8,10)}`;
 const GAME_URL='https://mochachen1225-create.github.io/hitting/';
 // clear-time thresholds in seconds for S / A / B; anything slower (or a timeout) is C
-const GRADE_T={darts:[15,25,40],burn:[12,20,35],nail:[10,18,30],tear:[12,20,35],crumple:[15,25,40],water:[12,20,35],shake:[8,15,25]};
+const GRADE_T={beans:[10,18,30],jigai:[15,25,40],darts:[15,25,40],burn:[12,20,35],nail:[10,18,30],tear:[12,20,35],crumple:[15,25,40],water:[12,20,35],shake:[8,15,25]};
 const GRADE_RANK={S:4,A:3,B:2,C:1};
 function gradeOf(mode,secs,hits,timeout){if(mode==='slipper')return hits>=SLIP_GOAL?(secs<=22?'S':'A'):hits>=70?'B':'C';
   if(timeout)return 'C';const g=GRADE_T[mode];return secs<=g[0]?'S':secs<=g[1]?'A':secs<=g[2]?'B':'C';}
@@ -1252,7 +1325,7 @@ function renderModes(){const grid=$('#modeGrid');grid.textContent='';
   $('#dailyTitle').textContent=`${F.daily} ${mmdd(td.key)}・${F.modes[td.mode][0]}`;
   $('#dailySub').textContent=[F.mods[td.mod],st?F.streak(st):'',dd.last===td.key&&dd.best?F.dailyBest(dd.best.grade,scoreVal(dd.best)):F.dailyNone].filter(Boolean).join('・');
   $('#achBtn').textContent=`🏆 ${T[S.lang].achTitle} ${achCount()}/${ACH.length}`;
-  const n=clearedCount();$('#dexLine').textContent=T[S.lang].dex(n)+'　'+(n===MODE_IDS.length?t('dexGold'):t('dexHint'));$('#dexLine').classList.toggle('gold',n===MODE_IDS.length);}
+  const n=clearedCount();$('#dexLine').textContent=T[S.lang].dex(n,MODE_IDS.length)+'　'+(n===MODE_IDS.length?t('dexGold'):t('dexHint'));$('#dexLine').classList.toggle('gold',n===MODE_IDS.length);}
 function startMode(id,daily=false){$('.hp').hidden=false;S.daily=daily;S.mod=daily?todayChallenge().mod:null;S.mode=id;S.medal=null;S.slipHits=0;S.slipSecs=0;S.score=null;P.length=0;bubbles.length=0;ptrs.clear();$('#chant').hidden=true;$('#catSkip').hidden=true;
   G=MAKERS[id]();$('#hudTitle').textContent=(daily?t('daily')+'・':'')+t('modes')[id][0];$('#hudTime').textContent='';setHp(100);
   showHint(daily?`【${t('mods')[S.mod]}】${t('hints')[id]}`:t('hints')[id]);show('play');}

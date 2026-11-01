@@ -1,4 +1,4 @@
-// Smoke test: plays every mode to the end and reports page errors.
+// Smoke test: plays every mode (including the hand-drawn talisman) to the end and reports page errors.
 // Usage: node tools/smoke.js   (needs Playwright + Chromium; run from the repo root)
 const path = require('path');
 const { chromium } = require('playwright');
@@ -12,7 +12,7 @@ const { serve } = require('./serve');
   await p.goto(srv.url);
   await p.click('[data-lang="zh"]');
   await p.click('#toModes');
-  for (const m of ['darts', 'slipper', 'burn', 'nail', 'tear', 'crumple', 'water', 'shake']) {
+  for (const m of ['darts', 'slipper', 'burn', 'nail', 'tear', 'crumple', 'water', 'shake', 'beans', 'jigai', 'draw']) {
     await p.evaluate(id => startMode(id), m);
     await p.waitForTimeout(200);
     await p.evaluate(() => damage(G, 999));

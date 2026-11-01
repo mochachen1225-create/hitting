@@ -6,3 +6,7 @@ Katie 用 Gemini／Flow 生的原圖（Drive「小人退散 素材」，11/1）�
 ## 11/1 第二批
 - Paper_effigy_figure_for_ritual_65da45f9.jpg（紙小人重畫）、Taiwanese_flip-flop_slipper_on_b_9b09e12f.jpg（拖鞋重畫；Drive 原檔名有「…」，已拿掉）
 - Ascent_of_the_Jade_Throne.mp4（62 秒）、Steps_of_the_Jade_Fox.mp4（78 秒）：Gemini 做的背景音樂，mp4 裡是 1024×1024 畫面＋音軌，用的時候抽音軌。AI 音樂，itch 要加勾 Sound。
+
+## 11/1 第三批（貓貓神花色＋小魚乾，綠底要去背）
+- Cat_deity_sitting_on_cloud_2e4dfc2b.jpg、_5bbd5dfe.jpg、_53b249f6.jpg（三花、白、黑）、Tabby_cat_deity_sitting_cloud_347423f3.jpg（虎斑）
+- Dried_anchovy_fish_snack_illustr_cf9ac30f.jpg（小魚乾；Drive 原檔名有「…」）

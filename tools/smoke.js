@@ -15,10 +15,14 @@ const { chromium } = require('playwright');
     await p.waitForTimeout(200);
     await p.evaluate(() => damage(G, 999));
     await p.waitForTimeout(2600);
-    await p.mouse.click(195, 400);          // skip the sunrise finale
+    // step through the finale: sunrise -> moon blocks -> (cat god) -> result
+    for (let k = 0; k < 40 && await p.evaluate(() => screen) !== 'result'; k++) {
+      await p.waitForTimeout(250);
+      const step = await p.evaluate(() => !G ? '' : (G.skip || G.coat) ? 'skip' : G.sub ? 'sunrise' : '');
+      if (step === 'skip') await p.click('#catSkip');
+      else if (step === 'sunrise') await p.mouse.click(195, 400);
+    }
     await p.waitForTimeout(300);
-    if (await p.evaluate(() => !!(G && G.coat))) await p.click('#catSkip');
-    await p.waitForTimeout(2500);
     const scr = await p.evaluate(() => screen);
     console.log(m.padEnd(8), scr === 'result' ? 'ok' : 'STUCK on ' + scr);
   }

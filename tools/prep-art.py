@@ -47,21 +47,7 @@ for y in range(im.size[1]):
             px[x, y] = (r, g, b, int(255 * (sat - 0.16) / 0.08))
 save(im, 'talisman-paper', 80)
 
-# cat god: key out the green screen, trim, keep a soft edge
-im = Image.open(os.path.join(INBOX, CATGOD)).convert('RGBA')
-px = im.load()
-for y in range(im.size[1]):
-    for x in range(im.size[0]):
-        r, g, b, a = px[x, y]
-        excess = g - max(r, b)
-        if excess > 60:
-            px[x, y] = (0, 0, 0, 0)
-        elif excess > 20:
-            k = (excess - 20) / 40
-            px[x, y] = (r, int(g - excess * k * 0.9), b, int(255 * (1 - k)))
-im = im.crop(im.getbbox())
-im.thumbnail((520, 640), Image.LANCZOS)
-save(im, 'cat-god', 82)
+# cat god: handled with the other coats further down (cat-god-<coat>.webp)
 
 # painted talismans: the shareable talisman picks one at random (also used for promo images)
 for i, f in enumerate([COVER, 'Taoist_talisman_on_golden_paper_dca9cb41.jpg'], 1):
@@ -160,3 +146,13 @@ if shutil.which('ffmpeg'):
         if os.path.exists(src):
             subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', src, '-vn', '-af', 'loudnorm=I=-20:TP=-2', '-ac', '2', '-ar', '44100', '-b:a', '80k', f'assets/music-{key}.mp3'], check=True)
             print(f'music-{key}.mp3', os.path.getsize(f'assets/music-{key}.mp3') // 1024, 'KB')
+
+# ---- third batch: Cat God coats and the dried fish (green screen) ----
+COATS = {'orange': CATGOD, 'calico': 'Cat_deity_sitting_on_cloud_2e4dfc2b.jpg', 'white': 'Cat_deity_sitting_on_cloud_5bbd5dfe.jpg',
+         'black': 'Cat_deity_sitting_on_cloud_53b249f6.jpg', 'grey': 'Tabby_cat_deity_sitting_cloud_347423f3.jpg'}
+for coat, f in COATS.items():
+    if os.path.exists(os.path.join(INBOX, f)):
+        im = key_green(f); im.thumbnail((520, 640), Image.LANCZOS); save(im, f'cat-god-{coat}', 82)
+FISH = 'Dried_anchovy_fish_snack_illustr_cf9ac30f.jpg'
+if os.path.exists(os.path.join(INBOX, FISH)):
+    im = key_green(FISH); im.thumbnail((260, 260), Image.LANCZOS); save(im, 'fish', 84)

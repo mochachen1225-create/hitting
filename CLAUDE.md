@@ -7,7 +7,7 @@
 - repo 裡不要放任何個資：不寫使用者或家人的名字、職業、email、所在地等。
 - 口訣字幕一律繁體中文；介面和台詞要有中文、英文兩份。
 - GitHub Pages 從 `main` 分支發布；使用者要更新公開網站時，再把工作分支同步到 `main`。
-- 改版要升版本號：`VERSION` 檔和 `src/game.html` 的 `const VERSION` 一起改（`tools/build.sh` 不一致會警告）。
+- 改版要升版本號：`VERSION` 檔和 `src/game.html` 的 `const VERSION` 一起改（`tools/build.sh` 不一致會警告），並在 `CHANGES.md` 最上面寫玩家看得懂的中英更新說明。
 - 上架檔用 `sh tools/package.sh` 產生（`dist/`，不進 git）；截圖和封面用 `node tools/make-promo.js` 重拍。
 - 上架和宣傳由「總編」對話排程；新功能或大改動完成後用 send_message 通知總編（版本號、一兩句玩家看得懂的修改、itch／Newgrounds 要不要更新）。
 - 所有新內容（介面、台詞、圖鑑、成就、上架文案）都要中英兩份；AI 生成的素材要在 README 和 `docs/itch-page.md` 照實標示。

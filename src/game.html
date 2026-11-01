@@ -97,6 +97,11 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .bless{color:var(--talisman);font-size:14px;margin:0}
 .share-col{display:flex;flex-direction:column;gap:10px;width:min(100%,360px)}
 .share-col .btn{width:100%}
+/* daily challenge banner */
+.daily{display:flex;align-items:center;gap:12px;width:min(100%,460px);text-align:left;padding:12px 14px;border-radius:16px;border:1.5px solid var(--talisman);background:linear-gradient(135deg,rgba(236,194,76,.22),rgba(216,64,46,.2));color:var(--paper)}
+.daily .seal{background:var(--talisman);color:#4a2a08}
+.daily-txt{flex:1;min-width:0}.daily-txt b{display:block;font-size:16px}.daily-txt small{display:block;color:var(--mist);font-size:12px;margin-top:2px}
+.daily-go{flex:none;padding:6px 14px;border-radius:99px;background:var(--cinnabar);color:#fff6ea;font-weight:700;font-size:14px}
 /* collection + score */
 .card{position:relative}
 .badge{position:absolute;top:6px;right:9px;font-family:var(--font-display);font-weight:900;font-size:16px;color:var(--paper)}
@@ -163,6 +168,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 <section id="modesScr" class="screen" hidden>
   <div class="target"><span data-i18n="target"></span><b id="tgtName"></b><button id="editName" class="linkbtn" type="button" data-i18n="edit"></button></div>
   <h2 data-i18n="modesTitle"></h2>
+  <button id="dailyBtn" class="daily" type="button"><span class="seal">今</span><span class="daily-txt"><b id="dailyTitle"></b><small id="dailySub"></small></span><span class="daily-go" data-i18n="dailyGo"></span></button>
   <p class="dex" id="dexLine"></p>
   <div id="modeGrid" class="grid"></div>
   <button id="randomBtn" class="btn primary" type="button" data-i18n="random"></button>
@@ -172,6 +178,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
   <h2 id="resHead"></h2>
   <p class="sub" id="resLine"></p>
   <div class="score" id="resScore" hidden><span class="grade" id="resGrade"></span><span class="score-txt"><b id="resTime"></b><span class="newrec" id="resNew"></span><small id="resBest"></small></span></div>
+  <p class="bless" id="resDaily" hidden></p>
   <p class="bless" id="resGold" hidden></p>
   <img id="talImg" alt="">
   <p class="fortune" id="resFortune"></p>
@@ -231,7 +238,7 @@ const T={
   shareMsg:(h,n,v,f,sc)=>`${h}\n我把「${n}」${v}了（${sc}）\n今日運勢：${f}`,
   scoreTime:(s,g)=>`${s} 秒・評級 ${g}`,scoreSlip:(h,g)=>`30 秒打了 ${h} 下・評級 ${g}`,challenge:'你敢來挑戰嗎？👉',
   secs:s=>`${s} 秒`,hitsVal:h=>`${h} 下`,newRec:'新紀錄！',firstClear:'首次退散！',bestLine:(g,v)=>`最佳紀錄：${g}・${v}`,timeUp:'時間到，小人自己嚇跑了',
-  crit:'暴擊！×2',dex:n=>`退散圖鑑 ${n} / 8`,dexHint:'八法全破，解鎖金符',dexGold:'金符已解鎖 ✨',goldUnlocked:'八法全破！之後的符咒都是金符 ✨',notYet:'未挑戰',
+  crit:'暴擊！×2',daily:'今日挑戰',dailyGo:'挑戰',mods:{crit:'暴擊率 ×3',short:'限時 30 秒',tiny:'小人縮小',giant:'小人變大',none:'原汁原味'},streak:n=>`連續 ${n} 天`,dailyBest:(g,v)=>`今日最佳 ${g}・${v}`,dailyNone:'今天還沒挑戰',dailyDone:n=>`今日挑戰完成！連續 ${n} 天 🔥`,dailyShare:(d,m,mod,n)=>`【今日挑戰 ${d}｜${m}・${mod}】連續 ${n} 天`,dex:n=>`退散圖鑑 ${n} / 8`,dexHint:'八法全破，解鎖金符',dexGold:'金符已解鎖 ✨',goldUnlocked:'八法全破！之後的符咒都是金符 ✨',notYet:'未挑戰',
   headlines:['小人退散成功～','小人已退散，好運請進！','報告！小人已清除完畢','今日小人處理完畢，收工！','小人退散　萬歲！','霉運退散，貴人快來～','打完收工，神清氣爽','小人走開，好運過來','本日小人額度已用完'],
   medals:{gold:'金拖鞋獎',silver:'銀拖鞋獎',bronze:'銅拖鞋獎'},medalLine:(m,n)=>`獲得「${m}」：30 秒打了 ${n} 下`,medalTry:n=>`30 秒打了 ${n} 下，再快一點就有獎牌`,
   combo:'連擊',headshot:'爆頭！',sec:'秒',
@@ -254,7 +261,7 @@ const T={
   shareMsg:(h,n,v,f,sc)=>`${h} 小人退散!\nI just ${v} "${n}" (${sc}).\nToday's fortune: ${f}`,
   scoreTime:(s,g)=>`${s}s, grade ${g}`,scoreSlip:(h,g)=>`${h} hits in 30s, grade ${g}`,challenge:'Think you can beat me? 👉',
   secs:s=>`${s}s`,hitsVal:h=>`${h} hits`,newRec:'New record!',firstClear:'First clear!',bestLine:(g,v)=>`Best: ${g} · ${v}`,timeUp:'Time up. It ran off scared',
-  crit:'CRIT! ×2',dex:n=>`Banish log ${n} / 8`,dexHint:'Clear all 8 to unlock the gold talisman',dexGold:'Gold talisman unlocked ✨',goldUnlocked:'All 8 cleared! Your talismans are gold now ✨',notYet:'New',
+  crit:'CRIT! ×2',daily:'Daily',dailyGo:'Play',mods:{crit:'Crit rate ×3',short:'30-second limit',tiny:'Tiny target',giant:'Giant target',none:'Classic'},streak:n=>`${n}-day streak`,dailyBest:(g,v)=>`Today's best ${g} · ${v}`,dailyNone:'Not played yet today',dailyDone:n=>`Daily challenge done! ${n}-day streak 🔥`,dailyShare:(d,m,mod,n)=>`[Daily ${d} | ${m} · ${mod}] ${n}-day streak`,dex:n=>`Banish log ${n} / 8`,dexHint:'Clear all 8 to unlock the gold talisman',dexGold:'Gold talisman unlocked ✨',goldUnlocked:'All 8 cleared! Your talismans are gold now ✨',notYet:'New',
   headlines:['Petty person banished!','Bad luck, begone!','Mission complete: jerk removed','Petty people out, good luck in','Done and dusted. Feeling great','Banished with style','Daily jerk quota: used up'],
   medals:{gold:'Golden Slipper',silver:'Silver Slipper',bronze:'Bronze Slipper'},medalLine:(m,n)=>`${m} medal: ${n} hits in 30 seconds`,medalTry:n=>`${n} hits in 30 seconds. A bit faster earns a medal`,
   combo:'Combo',headshot:'Headshot!',sec:'s',
@@ -454,13 +461,13 @@ function drawAmbient(c,dt){drawBg(c);const rg=c.createRadialGradient(W/2,H*.42,0
 function spot(c,x,y,r,a=.16){const g=c.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,`rgba(255,236,200,${a})`);g.addColorStop(1,'rgba(255,236,200,0)');c.fillStyle=g;c.fillRect(0,0,W,H);}
 function setHp(v){$('#hpFill').style.width=Math.max(0,v)+'%';}
 let shakeT=0,shakeA=0;function shake(a,d){shakeA=a;shakeT=d;}
-function manScale(){return Math.min(W/300,H/540)*1.05;}
+function manScale(){const k=S.daily&&S.mod==='tiny'?.72:S.daily&&S.mod==='giant'?1.3:1;return Math.min(W/300,H/540)*1.05*k;}
 function baseGame(){const m=newMan(W/2,H*.47,manScale());return{m,t:0,done:false,endT:0,fin:false,outro:1.6};}
 function damage(g,amt){if(g.done)return;g.m.hp=Math.max(0,g.m.hp-amt);setHp(g.m.hp);if(g.m.hp<=0){g.done=true;g.endT=0;g.clearT=g.t;sfx('ding');buzz([30,40,60]);}}
 function endCheck(g,dt){if(!g.done)return;g.endT+=dt;if(g.endT>g.outro&&!g.fin){g.fin=true;afterWin();}}
 function headY(m){return m.y-110*m.s;}
 /* juice: short freeze on every hit, and the occasional critical that counts double */
-let freezeT=0,flashT=0;const CRIT_P=.12;
+let freezeT=0,flashT=0;const CRIT_P=.12;const critP=()=>CRIT_P*(S.daily&&S.mod==='crit'?3:1);
 function hitFx(){freezeT=Math.max(freezeT,.035);}
 function crit(x,y){freezeT=.1;flashT=.14;shake(12,.22);buzz([20,30,50]);sfx('crit');sparks(x,y,26,'#fff1b0');
   emit({type:'glyph',text:t('crit'),x,y:y-36,vy:-70,life:1.1,size:34,color:'#ffd34d'});return true;}
@@ -478,7 +485,7 @@ function makeDarts(){const g=baseGame(),m=g.m;g.hits=0;m.s*=.8;m.y=H*.32;g.flyin
       const tx=d.x+Math.cos(d.a)*20,ty=d.y+Math.sin(d.a)*20,hit=!g.done&&hitMan(m,tx,ty);
       if(hit){d.dead=true;m.darts.push([hit[0],hit[1],d.a-m.rot]);const head=hit[1]<-44;sfx('thunk');buzz(20);setFace(m,'hit',.6);shake(4,.12);sparks(tx,ty,8,'#fff3c4');
         if(head){emit({type:'glyph',text:t('headshot'),x:tx,y:ty-20,vy:-60,life:.9,size:22,color:'#e9b949'});}
-        say(head?pick(['headshot','face']):'dart',m.x,headY(m),head);const cr=Math.random()<CRIT_P&&crit(tx,ty);hitFx();g.hits+=cr?2:1;damage(g,(cr?2:1)*100/DART_GOAL);}
+        say(head?pick(['headshot','face']):'dart',m.x,headY(m),head);const cr=Math.random()<critP()&&crit(tx,ty);hitFx();g.hits+=cr?2:1;damage(g,(cr?2:1)*100/DART_GOAL);}
       else if(d.y<-60||d.x<-60||d.x>W+60||d.y>H+60){d.dead=true;say('miss',m.x,headY(m));}}
     g.flying=g.flying.filter(d=>!d.dead);endCheck(g,dt);};
   g.draw=c=>{drawBg(c,'#1b1626','#0d0b13');spot(c,W/2,H*.32,W*.7,.12);
@@ -523,7 +530,7 @@ function makeSlipper(){const g=baseGame(),m=g.m;m.vx=rand(-1,1)>0?120:-120;m.vy=
     sfx('slap');buzz(12);if(m.bruises.length<40)m.bruises.push([hit[0],hit[1],10+Math.random()*8]);m.sy=.84;m.sx=1.1;setFace(m,'hit',.35);shake(3,.08);
     g.combo++;g.lastHit=performance.now();g.comboPop=1;sparks(p.x,p.y,5,'#ffffff');if(hit[1]<-42)say('face',m.x,headY(m),performance.now()-lastSay>500);else say('hit',m.x,headY(m));
     g.chantC+=2;const line=CHANT[g.chantI%CHANT.length];if(g.chantC>line.length+3){g.chantI++;g.chantC=0;}renderChant(g);
-    g.started=true;const cr=Math.random()<CRIT_P*.5&&crit(p.x,p.y);hitFx();g.hits=Math.min(SLIP_GOAL,g.hits+(cr?2:1));m.hp=100*(1-g.hits/SLIP_GOAL);setHp(m.hp);if(g.hits>=SLIP_GOAL)finish();};
+    g.started=true;const cr=Math.random()<critP()*.5&&crit(p.x,p.y);hitFx();g.hits=Math.min(SLIP_GOAL,g.hits+(cr?2:1));m.hp=100*(1-g.hits/SLIP_GOAL);setHp(m.hp);if(g.hits>=SLIP_GOAL)finish();};
   return g;}
 
 /* ---------- 3. burn ---------- */
@@ -580,7 +587,7 @@ const NAIL_GOAL=10;
 function makeNail(){const g=baseGame(),m=g.m;m.s*=.82;g.cxm=W/2;g.hold=null;g.hams=[];g.curA=1;g.ph=0;
   const strike=(x,y)=>{g.hams.push({x,y,t:0});const hit=!g.done&&hitMan(m,x,y);
     if(hit){m.nails.push(hit);sfx('clank');sparks(x,y,14,'#ffe7a8');shake(6,.14);buzz(35);setFace(m,'hit',.7);say('nail',m.x,headY(m));hitFx();
-      const cr=m.nails.length<NAIL_GOAL&&Math.random()<CRIT_P&&crit(x,y);if(cr)m.nails.push([hit[0]+rand(-16,16),hit[1]+rand(-16,16)]);damage(g,(cr?2:1)*100/NAIL_GOAL);}
+      const cr=m.nails.length<NAIL_GOAL&&Math.random()<critP()&&crit(x,y);if(cr)m.nails.push([hit[0]+rand(-16,16),hit[1]+rand(-16,16)]);damage(g,(cr?2:1)*100/NAIL_GOAL);}
     else{sfx('thunk');if(Math.random()<.4)say('taunt',m.x,headY(m));}};
   g.update=dt=>{tickFace(m,dt,g.hold?'scared':'smug');
     if(!g.done){const held=g.hold&&performance.now()-g.hold.t0>200;const target=held?.06:Math.max(.3,1-m.nails.length*.07);g.curA+=(target-g.curA)*Math.min(1,dt*6);
@@ -722,7 +729,7 @@ const SHAKE_GOAL=20;
 function makeShake(){const g=baseGame(),m=g.m;g.hits=0;const jw=Math.min(W*.66,270),jh=Math.min(H*.5,380);
   const J={x:W/2,y:H*.53,w:jw,h:jh,vx:0,vy:0,hx:W/2,hy:H*.53};g.J=J;m.s=g.m.s*.42;m.lx=0;m.ly=0;m.vx=0;m.vy=0;m.vr=0;g.drag=null;g.cool=0;
   try{if(typeof DeviceMotionEvent!=='undefined'&&DeviceMotionEvent.requestPermission)DeviceMotionEvent.requestPermission().catch(()=>{});}catch(e){}
-  const impact=v=>{if(v<260||g.cool>0||g.done)return;g.cool=.12;const cr=Math.random()<CRIT_P&&crit(m.x,m.y);g.hits+=cr?2:1;damage(g,(cr?2:1)*100/SHAKE_GOAL);sfx('clink',Math.min(1,v/1200));buzz(10);setFace(m,'dizzy',.8);say('shake',J.x,J.y-J.h/2-10);
+  const impact=v=>{if(v<260||g.cool>0||g.done)return;g.cool=.12;const cr=Math.random()<critP()&&crit(m.x,m.y);g.hits+=cr?2:1;damage(g,(cr?2:1)*100/SHAKE_GOAL);sfx('clink',Math.min(1,v/1200));buzz(10);setFace(m,'dizzy',.8);say('shake',J.x,J.y-J.h/2-10);
     for(let i=0;i<3;i++)emit({type:'glyph',text:'✦',x:m.x+rand(-20,20),y:m.y-60*m.s,vx:rand(-60,60),vy:rand(-90,-30),life:.7,size:14,color:'#e9b949'});};
   g.update=dt=>{const px=J.x,py=J.y,pvx=J.vx,pvy=J.vy;g.cool-=dt;
     if(g.drag&&!g.done){const k=Math.min(1,dt*25);J.x+=(g.drag.x+g.drag.dx-J.x)*k;J.y+=(g.drag.y+g.drag.dy-J.y)*k;J.vx+=((J.x-px)/dt-J.vx)*.5;J.vy+=((J.y-py)/dt-J.vy)*.5;}
@@ -913,6 +920,16 @@ async function makeTalisman(name,verb,fortune,blessed){
 /* ---------- flow ---------- */
 const MAKERS={darts:makeDarts,slipper:makeSlipper,burn:makeBurn,nail:makeNail,tear:makeTear,crumple:makeCrumple,water:makeWater,shake:makeShake};
 let G=null,screen='intro';const ROUND_MAX=60;
+const roundMax=()=>S.daily&&S.mod==='short'?30:ROUND_MAX;
+/* daily challenge: the date picks one mode and one twist, identical for every player */
+const MODS=['crit','short','tiny','giant','none'];
+function dayKey(d=new Date()){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function dayHash(k){let h=2166136261;for(const ch of k){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;}
+function todayChallenge(){const key=dayKey(),h=dayHash('xiaoren:'+key),mode=MODE_IDS[h%MODE_IDS.length];let mod=MODS[(h>>>8)%MODS.length];
+  if(mode==='slipper'&&mod==='short')mod='crit';return{key,mode,mod};}
+function getDaily(){const d=store.get('daily',{});return d&&typeof d==='object'?d:{};}
+function dailyStreak(){const d=getDaily(),td=dayKey(),yd=dayKey(new Date(Date.now()-864e5));return d.last===td||d.last===yd?(d.streak||0):0;}
+const mmdd=k=>`${+k.slice(5,7)}/${+k.slice(8,10)}`;
 const GAME_URL='https://mochachen1225-create.github.io/hitting/';
 // clear-time thresholds in seconds for S / A / B; anything slower (or a timeout) is C
 const GRADE_T={darts:[15,25,40],burn:[12,20,35],nail:[10,18,30],tear:[12,20,35],crumple:[15,25,40],water:[12,20,35],shake:[8,15,25]};
@@ -926,6 +943,10 @@ const clearedCount=()=>MODE_IDS.filter(id=>BEST[id]).length;
 const allCleared=()=>clearedCount()===MODE_IDS.length;
 function recordScore(g){const slip=S.mode==='slipper',secs=slip?(S.slipSecs||SLIP_TIME):(g.clearT!=null?g.clearT:g.t);
   const sc={mode:S.mode,secs:Math.round(secs*10)/10,hits:S.slipHits||0,timeout:!!g.timeout};sc.grade=gradeOf(S.mode,secs,sc.hits,sc.timeout);
+  if(S.daily){const td=todayChallenge(),d=getDaily(),yd=dayKey(new Date(Date.now()-864e5));
+    if(d.last!==td.key){d.streak=d.last===yd?(d.streak||0)+1:1;d.last=td.key;d.best=null;}
+    sc.prev=d.best;sc.isNew=better(sc,d.best);if(sc.isNew)d.best={mode:sc.mode,grade:sc.grade,secs:sc.secs,hits:sc.hits};
+    store.set('daily',d);sc.daily={key:td.key,mod:td.mod,streak:d.streak,best:d.best};sc.unlockGold=false;S.score=sc;return;}
   const prev=BEST[S.mode],wasAll=allCleared();sc.prev=prev;sc.isNew=better(sc,prev);
   if(sc.isNew){BEST[S.mode]={mode:sc.mode,grade:sc.grade,secs:sc.secs,hits:sc.hits};store.set('best',BEST);}
   sc.unlockGold=!wasAll&&allCleared();S.score=sc;}
@@ -941,9 +962,13 @@ function renderModes(){const grid=$('#modeGrid');grid.textContent='';
     tx.append(bb,sm);b.append(s,tx);
     const bd=document.createElement('span'),best=BEST[id];bd.className='badge'+(best?' g'+best.grade:' none');bd.textContent=best?best.grade:t('notYet');if(best)bd.title=T[S.lang].bestLine(best.grade,scoreVal(best));b.append(bd);
     b.addEventListener('click',()=>{audioInit();startMode(id);});grid.append(b);}
+  const td=todayChallenge(),dd=getDaily(),st=dailyStreak(),F=T[S.lang];
+  $('#dailyTitle').textContent=`${F.daily} ${mmdd(td.key)}・${F.modes[td.mode][0]}`;
+  $('#dailySub').textContent=[F.mods[td.mod],st?F.streak(st):'',dd.last===td.key&&dd.best?F.dailyBest(dd.best.grade,scoreVal(dd.best)):F.dailyNone].filter(Boolean).join('・');
   const n=clearedCount();$('#dexLine').textContent=T[S.lang].dex(n)+'　'+(n===MODE_IDS.length?t('dexGold'):t('dexHint'));$('#dexLine').classList.toggle('gold',n===MODE_IDS.length);}
-function startMode(id){$('.hp').hidden=false;S.mode=id;S.medal=null;S.slipHits=0;S.slipSecs=0;S.score=null;P.length=0;bubbles.length=0;ptrs.clear();$('#chant').hidden=true;$('#catSkip').hidden=true;
-  G=MAKERS[id]();$('#hudTitle').textContent=t('modes')[id][0];$('#hudTime').textContent='';setHp(100);showHint(t('hints')[id]);show('play');}
+function startMode(id,daily=false){$('.hp').hidden=false;S.daily=daily;S.mod=daily?todayChallenge().mod:null;S.mode=id;S.medal=null;S.slipHits=0;S.slipSecs=0;S.score=null;P.length=0;bubbles.length=0;ptrs.clear();$('#chant').hidden=true;$('#catSkip').hidden=true;
+  G=MAKERS[id]();$('#hudTitle').textContent=(daily?t('daily')+'・':'')+t('modes')[id][0];$('#hudTime').textContent='';setHp(100);
+  showHint(daily?`【${t('mods')[S.mod]}】${t('hints')[id]}`:t('hints')[id]);show('play');}
 function afterWin(){recordScore(G);startClear(()=>{if(Math.random()<.35)startCat();else showResult(false);});}
 /* the refreshing finale: night turns to sunrise */
 function startClear(next){P.length=0;bubbles.length=0;ptrs.clear();$('#chant').hidden=true;$('#hudTime').textContent='';$('#hudTitle').textContent='';setHp(0);
@@ -972,7 +997,8 @@ async function showResult(blessed){G=null;P.length=0;bubbles.length=0;$('#catSki
   const sc=S.score;$('#resScore').hidden=!sc;
   if(sc){const ge=$('#resGrade');ge.textContent=sc.grade;ge.className='grade g'+sc.grade;ge.style.animation='none';void ge.offsetWidth;ge.style.animation='';
     $('#resTime').textContent=sc.timeout?F.timeUp:scoreVal(sc);$('#resNew').textContent=sc.isNew?(sc.prev?F.newRec:F.firstClear):'';
-    const b=BEST[S.mode];$('#resBest').textContent=b&&!(sc.isNew&&!sc.prev)?F.bestLine(b.grade,scoreVal(b)):'';setTimeout(()=>sfx('stamp'),350);}
+    const b=sc.daily?sc.daily.best:BEST[S.mode];$('#resBest').textContent=b&&!(sc.isNew&&!sc.prev)?(sc.daily?F.dailyBest:F.bestLine)(b.grade,scoreVal(b)):'';setTimeout(()=>sfx('stamp'),350);}
+  $('#resDaily').hidden=!(sc&&sc.daily);if(sc&&sc.daily)$('#resDaily').textContent=F.dailyDone(sc.daily.streak);
   $('#resGold').hidden=!(sc&&sc.unlockGold);$('#resGold').textContent=F.goldUnlocked;if(sc&&sc.unlockGold)setTimeout(()=>sfx('ding'),700);
   $('#lineBtn').href='https://line.me/R/share?text='+encodeURIComponent(shareText());
   $('#talImg').removeAttribute('src');$('#talImg').alt=S.headline;show('result');
@@ -980,7 +1006,7 @@ async function showResult(blessed){G=null;P.length=0;bubbles.length=0;$('#catSki
   const r=await makeTalisman(S.name,verb,S.fortune,blessed);$('#talImg').src=r.url;S.talBlob=r.blob;}
 let DL=null;try{if(window.claude&&window.claude.use)window.claude.use('downloads').then(d=>{DL=d}).catch(()=>{});}catch(e){}
 function scoreLine(){const F=T[S.lang],sc=S.score;if(!sc)return '';return sc.mode==='slipper'?F.scoreSlip(sc.hits,sc.grade):F.scoreTime(sc.secs,sc.grade);}
-function shareText(){const F=T[S.lang];let s=F.shareMsg(S.headline,S.name,F.verbs[S.mode],S.fortune[0]+' '+S.fortune[1],scoreLine());if(S.medal)s+='\n🏅 '+F.medalLine(F.medals[S.medal],S.slipHits);return s+'\n'+F.challenge+' '+GAME_URL;}
+function shareText(){const F=T[S.lang],sc=S.score;let s=(sc&&sc.daily?F.dailyShare(mmdd(sc.daily.key),F.modes[S.mode][0],F.mods[sc.daily.mod],sc.daily.streak)+'\n':'')+F.shareMsg(S.headline,S.name,F.verbs[S.mode],S.fortune[0]+' '+S.fortune[1],scoreLine());if(S.medal)s+='\n🏅 '+F.medalLine(F.medals[S.medal],S.slipHits);return s+'\n'+F.challenge+' '+GAME_URL;}
 async function doShare(){const blob=S.talBlob;if(!blob)return;const msg=shareText();
   try{const file=new File([blob],'xiaoren-tuisan.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],text:msg});return;}}
   catch(e){if(e&&e.name==='AbortError')return;}
@@ -997,6 +1023,7 @@ function goModes(){const v=$('#nameIn').value.trim();S.name=v||t('defaultName');
 $('#toModes').addEventListener('click',goModes);
 $('#nameIn').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#nameIn').blur();goModes();}});
 $('#editName').addEventListener('click',()=>show('nameScr'));
+$('#dailyBtn').addEventListener('click',()=>{audioInit();startMode(todayChallenge().mode,true);});
 $('#randomBtn').addEventListener('click',()=>{audioInit();const cards=[...document.querySelectorAll('.card')];const final=Math.floor(Math.random()*cards.length);let i=0;const total=14+final;
   $('#randomBtn').disabled=true;const step=()=>{cards.forEach(c=>c.classList.remove('lit'));cards[i%cards.length].classList.add('lit');sfx('pop');
     if(i>=total){setTimeout(()=>{cards.forEach(c=>c.classList.remove('lit'));$('#randomBtn').disabled=false;startMode(MODE_IDS[final]);},450);return;}i++;setTimeout(step,50+i*i*.9);};step();});
@@ -1004,7 +1031,7 @@ $('#backBtn').addEventListener('click',()=>{G=null;P.length=0;bubbles.length=0;$
 $('#soundBtn').addEventListener('click',()=>{audioInit();setSound(!S.sound);});
 $('#catSkip').addEventListener('click',()=>showResult(false));
 $('#shareBtn').addEventListener('click',doShare);
-$('#againBtn').addEventListener('click',()=>startMode(S.mode));
+$('#againBtn').addEventListener('click',()=>startMode(S.mode,S.daily));
 $('#otherBtn').addEventListener('click',()=>show('modesScr'));
 $('#newBtn').addEventListener('click',()=>{$('#nameIn').value='';show('nameScr');});
 applyLang();
@@ -1016,7 +1043,7 @@ function loop(now){const dt=Math.min(.05,(now-last)/1000)||.016;last=now;cx.setT
   if(G&&freezeT>0)freezeT-=dt;
   else if(G){G.t+=dt;
     // every round has an end: 60 s cap (the slipper round runs its own 30 s clock)
-    if(G.m&&S.mode!=='slipper'){const left=Math.max(0,ROUND_MAX-G.t),el=$('#hudTime');if(!G.done&&left<=0){G.timeout=true;damage(G,999);}
+    if(G.m&&S.mode!=='slipper'){const left=Math.max(0,roundMax()-G.t),el=$('#hudTime');if(!G.done&&left<=0){G.timeout=true;damage(G,999);}
       const txt=G.done?'':`${Math.ceil(left)} ${t('sec')}`;if(el.textContent!==txt)el.textContent=txt;el.classList.toggle('low',left<10);}
     G.update(dt);}
   if(G)G.draw(cx);else drawAmbient(cx,dt);

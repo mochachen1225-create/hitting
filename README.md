@@ -145,6 +145,10 @@
 - [New Year's effigies in Ecuador – Atlas Obscura](https://atlasobscura.com/articles/new-years-effigies-ecuador)
 - [Burning of Judas – Wikipedia](https://en.wikipedia.org/wiki/Burning_of_Judas)
 
+## 製作
+
+摩卡與貓貓小隊（Mocha & the Cat Hero Party）
+
 ## 隱私
 
 遊戲沒有後端、不蒐集資料。輸入的名字、語言、音效設定和最佳紀錄只存在玩家自己瀏覽器的 localStorage；分享符咒圖時，圖片由玩家自己決定傳給誰。

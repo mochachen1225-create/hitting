@@ -74,7 +74,10 @@ EN: Touch or mouse. Tap, swipe, drag and draw; each mode shows a one-line hint. 
 
 ## 製作與素材 Credits
 
-- 企劃、試玩、拍板：摩卡與貓貓小隊
+EN credit line: Made by Mocha & the Cat Hero Party.
+
+
+- 企劃、試玩、拍板：摩卡與貓貓小隊（英文署名：Mocha & the Cat Hero Party）
 - 程式與文字：Claude Code（AI）撰寫
 - 美術：場景背景、符咒、貓貓神由 Google Gemini 與 Google Flow 生成；紙小人、道具、特效為程式繪製
 - 音效：全部用 Web Audio 即時合成，沒有錄音或人聲

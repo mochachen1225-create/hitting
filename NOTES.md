@@ -112,6 +112,7 @@
 
 ## 更新紀錄
 
+- 2026-11-04：v1.0.4 英文署名「Mocha & the Cat Hero Party」：選單底部顯示製作署名（中英隨語言切換），itch 文案、README、CLAUDE.md 同步
 - 2026-11-02：署名規則：公開檔案不寫作者名字，一律署名「摩卡與貓貓小隊」（itch 文案已改、CLAUDE.md 已補）
 - 2026-11-01：合併 `.github/workflows/version-tag.yml`：`VERSION` 一改，GitHub Actions 自動打 `v<版本>` 標籤（同名已存在就跳過）
 - 2026-11-01：上架決定：先只上 itch（11/21 首次上架），Newgrounds 暫緩

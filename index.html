@@ -289,7 +289,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 
 <script>
 'use strict';
-const VERSION='1.0.3';
+const VERSION='1.0.4';
 const $=s=>document.querySelector(s);
 const FONT_D='"Noto Serif TC","Songti TC","PMingLiU",serif';
 const FONT_C='"Liu Jian Mao Cao","Zhi Mang Xing","LXGW WenKai TC","Noto Serif TC",serif';
@@ -316,7 +316,7 @@ const T={
   shareMsg:(h,n,v,f,sc)=>`${h}\n我把「${n}」${v}了（${sc}）\n今日運勢：${f}`,
   scoreTime:(s,g)=>`${s} 秒・評級 ${g}`,scoreSlip:(h,g)=>`30 秒打了 ${h} 下・評級 ${g}`,challenge:'你敢來挑戰嗎？👉',
   secs:s=>`${s} 秒`,hitsVal:h=>`${h} 下`,newRec:'新紀錄！',firstClear:'首次退散！',bestLine:(g,v)=>`最佳紀錄：${g}・${v}`,timeUp:'時間到，小人自己嚇跑了',
-  crit:'暴擊！×2',back:'返回',musicOn:'音樂 開',musicOff:'音樂 關',jigaiHints:{absorb:'把飄來飄去的黑色煞氣拖進紙替身裡',offer:'把小三牲（生豬肉、豆乾、鴨蛋）拖到供盤上',burn:'點紙替身，把它丟進金爐燒掉'},jigaiGoal:{absorb:n=>`煞氣還有 ${n} 團`,offer:n=>`供品還差 ${n} 樣`,burn:()=>'丟進金爐！'},jigaiFed:'吃飽了，走吧～',drawTitle:'親手畫符',drawSub:'畫一道符，貼在小人頭上，分享你的親筆符咒',drawHere:'在這裡畫符',drawClear:'清除',drawDone:'完成',drawMore:'再多畫幾筆吧',drawThrow:'點一下把符射出去',drawHint2:'看準時機點一下，把符貼到小人額頭上！',achTitle:'成就',achUnlocked:'成就解鎖',achCount:(n,m)=>`已解鎖 ${n} / ${m}`,achReward:(n,r)=>`${n} 個：${r}`,rw_goldText:'符咒金色字',rw_glow:'朱砂光框',rw_master:'退散大師印',
+  crit:'暴擊！×2',back:'返回',credit:'製作：摩卡與貓貓小隊',musicOn:'音樂 開',musicOff:'音樂 關',jigaiHints:{absorb:'把飄來飄去的黑色煞氣拖進紙替身裡',offer:'把小三牲（生豬肉、豆乾、鴨蛋）拖到供盤上',burn:'點紙替身，把它丟進金爐燒掉'},jigaiGoal:{absorb:n=>`煞氣還有 ${n} 團`,offer:n=>`供品還差 ${n} 樣`,burn:()=>'丟進金爐！'},jigaiFed:'吃飽了，走吧～',drawTitle:'親手畫符',drawSub:'畫一道符，貼在小人頭上，分享你的親筆符咒',drawHere:'在這裡畫符',drawClear:'清除',drawDone:'完成',drawMore:'再多畫幾筆吧',drawThrow:'點一下把符射出去',drawHint2:'看準時機點一下，把符貼到小人額頭上！',achTitle:'成就',achUnlocked:'成就解鎖',achCount:(n,m)=>`已解鎖 ${n} / ${m}`,achReward:(n,r)=>`${n} 個：${r}`,rw_goldText:'符咒金色字',rw_glow:'朱砂光框',rw_master:'退散大師印',
   disclaimer:'純屬娛樂：習俗介紹都是傳說與遊戲改編，不是真實歷史或宗教建議，也沒有任何效力。',
   codexOpen:'📜 民俗圖鑑',codexTitle:'民俗圖鑑',codexLocked:'？？？　玩過就會解鎖',codexCount:(n,m)=>`已解鎖 ${n} / ${m}`,codexNew:x=>`📜 新圖鑑：${x}`,
   poeTitle:'擲筊',poeHint:'點一下或往上滑擲筊。連續三個聖筊，運勢升級！',poeTap:'點一下擲筊',poeAsk:n=>`請問神明：「${n}」退散了嗎？`,poeLeft:n=>`還可以擲 ${n} 次`,
@@ -345,7 +345,7 @@ const T={
   shareMsg:(h,n,v,f,sc)=>`${h} 小人退散!\nI just ${v} "${n}" (${sc}).\nToday's fortune: ${f}`,
   scoreTime:(s,g)=>`${s}s, grade ${g}`,scoreSlip:(h,g)=>`${h} hits in 30s, grade ${g}`,challenge:'Think you can beat me? 👉',
   secs:s=>`${s}s`,hitsVal:h=>`${h} hits`,newRec:'New record!',firstClear:'First clear!',bestLine:(g,v)=>`Best: ${g} · ${v}`,timeUp:'Time up. It ran off scared',
-  crit:'CRIT! ×2',back:'Back',musicOn:'Music on',musicOff:'Music off',jigaiHints:{absorb:'Drag the drifting dark clouds of bad luck into the paper stand-in',offer:'Drag the three offerings (raw pork, tofu, duck egg) onto the plate',burn:'Tap the stand-in to toss it into the furnace'},jigaiGoal:{absorb:n=>`${n} clouds left`,offer:n=>`${n} offerings left`,burn:()=>'Into the furnace!'},jigaiFed:'Full now. Off you go~',drawTitle:'Draw a Talisman',drawSub:'Draw your own talisman, stick it on the paper man, share it',drawHere:'Draw here',drawClear:'Clear',drawDone:'Done',drawMore:'Add a few more strokes',drawThrow:'Tap to fling the talisman',drawHint2:'Time your tap and stick the talisman on its forehead!',achTitle:'Achievements',achUnlocked:'Achievement',achCount:(n,m)=>`Unlocked ${n} / ${m}`,achReward:(n,r)=>`${n}: ${r}`,rw_goldText:'gold talisman text',rw_glow:'cinnabar glow frame',rw_master:'Master Banisher seal',
+  crit:'CRIT! ×2',back:'Back',credit:'Made by Mocha & the Cat Hero Party',musicOn:'Music on',musicOff:'Music off',jigaiHints:{absorb:'Drag the drifting dark clouds of bad luck into the paper stand-in',offer:'Drag the three offerings (raw pork, tofu, duck egg) onto the plate',burn:'Tap the stand-in to toss it into the furnace'},jigaiGoal:{absorb:n=>`${n} clouds left`,offer:n=>`${n} offerings left`,burn:()=>'Into the furnace!'},jigaiFed:'Full now. Off you go~',drawTitle:'Draw a Talisman',drawSub:'Draw your own talisman, stick it on the paper man, share it',drawHere:'Draw here',drawClear:'Clear',drawDone:'Done',drawMore:'Add a few more strokes',drawThrow:'Tap to fling the talisman',drawHint2:'Time your tap and stick the talisman on its forehead!',achTitle:'Achievements',achUnlocked:'Achievement',achCount:(n,m)=>`Unlocked ${n} / ${m}`,achReward:(n,r)=>`${n}: ${r}`,rw_goldText:'gold talisman text',rw_glow:'cinnabar glow frame',rw_master:'Master Banisher seal',
   disclaimer:'Just for fun: these folklore notes are playful retellings, not history or religious advice, and nothing here has any real effect.',
   codexOpen:'📜 Folklore',codexTitle:'Folklore',codexLocked:'??? Play to unlock',codexCount:(n,m)=>`Unlocked ${n} / ${m}`,codexNew:x=>`📜 New folklore: ${x}`,
   poeTitle:'Moon Blocks',poeHint:'Tap or swipe up to toss. Three holy cups in a row upgrades your fortune!',poeTap:'Tap to toss',poeAsk:n=>`Ask the gods: is "${n}" gone?`,poeLeft:n=>`${n} tosses left`,
@@ -1389,7 +1389,7 @@ function show(id){screen=id;musicFor(id==='play'?'play':'menu');if(id==='modesSc
 function showHint(txt){const h=$('#hint');h.textContent=txt;h.style.animation='none';void h.offsetWidth;h.style.animation='';}
 function applyLang(){document.documentElement.lang=S.lang==='zh'?'zh-Hant':'en';
   document.querySelectorAll('[data-i18n]').forEach(el=>{const v=t(el.dataset.i18n);if(typeof v==='string')el.textContent=v;});
-  $('#nameIn').placeholder=t('namePh');setSound(S.sound);setMusic(MUSIC.on);renderModes();}
+  $('#nameIn').placeholder=t('namePh');setSound(S.sound);setMusic(MUSIC.on);renderModes();if($('#verTag'))$('#verTag').textContent='v'+VERSION+'　'+t('credit');}
 function renderModes(){const grid=$('#modeGrid');grid.textContent='';
   for(const id of MODE_IDS){const[nm,ds]=t('modes')[id];const b=document.createElement('button');b.type='button';b.className='card';b.dataset.mode=id;
     const s=document.createElement('span');s.className='seal';s.textContent=GLYPH[id];const tx=document.createElement('span');const bb=document.createElement('b');bb.textContent=nm;const sm=document.createElement('small');sm.textContent=ds;
@@ -1481,7 +1481,7 @@ $('#otherBtn').addEventListener('click',()=>show('modesScr'));
 $('#newBtn').addEventListener('click',()=>{$('#nameIn').value='';show('nameScr');});
 applyLang();
 if(S.lang==='en'){document.querySelector('[data-lang="en"]').classList.add('primary');document.querySelector('[data-lang="zh"]').classList.remove('primary');}
-$('#verTag').textContent='v'+VERSION;
+$('#verTag').textContent='v'+VERSION+'　'+t('credit');
 
 /* main loop */
 let last=performance.now();

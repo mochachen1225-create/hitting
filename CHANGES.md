@@ -3,6 +3,10 @@
 玩家看得懂的版本紀錄。開發細節與設計理由在 `NOTES.md`。
 Player-facing release notes. Development details live in `NOTES.md`.
 
+## 1.0.4 (2026-11-04)
+- 選單底部加上製作署名「摩卡與貓貓小隊」。
+- Added the team credit on the menu: Made by Mocha & the Cat Hero Party.
+
 ## 1.0.3 (2026-11-01)
 - 道具全部換成水墨插畫：筊杯、飛鏢、蠟燭、鐵鎚、紙團、垃圾桶、鬼面具、豆子、福字、煞氣、供品、供盤、金爐。
 - Every prop is now painted in the ink-wash style: moon blocks, darts, candle, hammer, paper ball, trash can, oni mask, beans, the 福 charm, bad-luck smoke, offerings, plate and furnace.
